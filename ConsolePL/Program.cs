@@ -9,6 +9,10 @@ namespace ConsolePL
     {
         static void Main(string[] args)
         {
+            Console.Clear();
+            Console.WriteLine("=======================");
+            Console.WriteLine("|        LOGIN        |");
+            Console.WriteLine("=======================");
             Console.Write("User Name: ");
             string userName = Console.ReadLine();
             Console.Write("Password: ");
@@ -26,21 +30,20 @@ namespace ConsolePL
             }
             else
             {
-                Console.WriteLine("Login");
-
                 if (staff.Role == staff.ROLE_SALE)
                 {
-
                     int choice;
                     do
                     {
-                        Console.WriteLine("===================================================");
-                        Console.WriteLine("|\n LAPTOP SHOP T&G \n|");
-                        Console.WriteLine("===================================================");
+                        Console.Clear();
+                        Console.WriteLine("==================================");
+                        Console.WriteLine("|          LAPTOP SHOP T&G       |");
+                        Console.WriteLine("|            Sale Menu           |");
+                        Console.WriteLine("==================================");
                         Console.WriteLine("1. SEARCH LATOP ");
                         Console.WriteLine("2. CREATE ORDER");
-                        Console.WriteLine("3. EXITS");
-                        Console.WriteLine("===================================================");
+                        Console.WriteLine("3. EXIT");
+                        Console.WriteLine("==================================");
                         Console.Write("# YOUR CHOICE: ");
                         choice = Convert.ToInt32(Console.ReadLine());
                         switch (choice)
@@ -54,7 +57,7 @@ namespace ConsolePL
                                 break;
                             default:
                                 Console.WriteLine("Invalid!!!");
-                                Console.WriteLine("please choose again from 1 -3");
+                                Console.WriteLine("please choose again from 1 - 3");
                                 Console.ReadLine();
                                 break;
                         }
@@ -65,12 +68,14 @@ namespace ConsolePL
                     int choices;
                     do
                     {
-                        Console.WriteLine("===================================================");
-                        Console.WriteLine("|\n LAPTOP SHOP T&G \n|");
-                        Console.WriteLine("===================================================");
-                        Console.WriteLine("1. PAYMENT ");
-                        Console.WriteLine("2. EXITS");
-                        Console.WriteLine("===================================================");
+                        Console.Clear();
+                        Console.WriteLine("==================================");
+                        Console.WriteLine("|        LAPTOP SHOP T&G         |");
+                        Console.WriteLine("|        Accountant Menu         |");
+                        Console.WriteLine("==================================");
+                        Console.WriteLine("1. PAY ");
+                        Console.WriteLine("2. EXIT");
+                        Console.WriteLine("==================================");
                         Console.WriteLine(" # YOUR CHOICES: ");
                         choices = Convert.ToInt32(Console.ReadLine());
                         switch (choices)
@@ -82,7 +87,7 @@ namespace ConsolePL
                                 break;
                             default:
                                 Console.WriteLine("Invalid!!!");
-                                Console.WriteLine("please choose again from 1 -2");
+                                Console.WriteLine("please choose again from 1 - 2");
                                 Console.ReadLine();
                                 break;
                         }
