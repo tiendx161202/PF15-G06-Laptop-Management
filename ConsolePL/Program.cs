@@ -9,19 +9,42 @@ namespace ConsolePL
     {
         static void Main(string[] args)
         {
+            StaffBL sbl = new StaffBL();
             Console.Clear();
             Console.WriteLine("=======================");
             Console.WriteLine("|        LOGIN        |");
             Console.WriteLine("=======================");
-            Console.Write("User Name: ");
-            string userName = Console.ReadLine();
-            Console.Write("Password: ");
-            string pass = GetPassword();
-            Console.WriteLine();
+            string userName;
+            string pass;
+            string ErrorMessage;
 
-            //valid username password here
+            do
+            {
+                Console.Write("\nUser Name: ");
+                userName = Console.ReadLine();
+                sbl.ValidateUserName(userName, out ErrorMessage);
+
+                if (ErrorMessage != null)
+                {
+                    Console.WriteLine(ErrorMessage);
+                }
+            }
+            while (sbl.ValidateUserName(userName, out ErrorMessage) == false);
+
+            do
+            {
+                Console.Write("Password: ");
+                pass = GetPassword();
+                sbl.ValidatePassword(pass, out ErrorMessage);
+
+                if (ErrorMessage != null)
+                {
+                    Console.WriteLine("\n" + ErrorMessage);
+                }
+                Console.WriteLine();
+            } while (sbl.ValidatePassword(pass, out ErrorMessage) == false);
+
             Staff staff = new Staff() { UserName = userName, Password = pass };
-            StaffBL sbl = new StaffBL();
             staff = sbl.Login(staff);
 
             if (staff == null)
