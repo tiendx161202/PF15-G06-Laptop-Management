@@ -10,13 +10,14 @@ namespace DAL
         {
             try
             {
-                Mysqlconnection connection = DBHelper.Get
+                // Mysqlconnection connection = DBHelper.Get
             }
             catch (System.Exception)
             {
 
                 throw;
             }
+            return staff;
         }
     }
 
