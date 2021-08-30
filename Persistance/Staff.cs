@@ -15,7 +15,6 @@ namespace Persistance
         public int ROLE_SALE = 1;
         public int ROLE_ACCOUNTANT = 2;
 
-        
 
     }
 }
