@@ -162,9 +162,13 @@ INSERT INTO InvoiceDetails (invoiceno, laptopid, quanity, price)
 -- SELECT * FROM Invoices;
 -- SELECT * FROM Invoicedetails;
 
-UPDATE staffs SET Password = "a393e08eefc18c2b27ff83dd5beb88f4" WHERE staffid = 1; -- pass: pGiang123
-UPDATE staffs SET Password = "1bd655f2516bbd426600247fd1f08107" WHERE staffid = 2; -- pass: pTien123
-UPDATE staffs SET Password = "fd84e9e03a26f06dc2ae5a03d118cbf6" WHERE staffid = 3; -- pass: pMAnh445
+UPDATE staffs SET UserName = "Giang1111" WHERE staffid = 1;
+UPDATE staffs SET UserName = "Tien2222" WHERE staffid = 2;
+UPDATE staffs SET UserName = "Manhlt23" WHERE staffid = 3;
+
+UPDATE staffs SET Password = "61198ded08f2e09fa7e65321472efe47" WHERE staffid = 1; -- pass: Giang123@
+UPDATE staffs SET Password = "e426514be6bd76dedaf40277d9d016d5" WHERE staffid = 2; -- pass: Tien123@
+UPDATE staffs SET Password = "aeb25905a41a1dd79ba133d7260cb116" WHERE staffid = 3; -- pass: MAnh345^
 
 
 
