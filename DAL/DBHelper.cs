@@ -1,23 +1,22 @@
 ﻿using System;
-using MySql.Data;
+using MySql.Data.MySqlClient;
 
 namespace DAL
 {
-    public class DBHelper
+    public class DbHelper
     {
-        public class DBHelper
+        private static MySqlConnection connection;
+        public static MySqlConnection GetConnection()
         {
-            private static MySqlconnection connection;
-            public static MySqlconnection GetConnection()
+            if (connection == null)
             {
-                if (connection == null)
-                {
-                   connection = new MySqlConnection
+                connection = new MySqlConnection
                 {
                     ConnectionString = "server=localhost;user id=vtca;password=vtcacademy;port=3306;database=LoginDB;"
                 };
-                }
             }
+            return connection;
         }
+        private DbHelper() { }
     }
 }
