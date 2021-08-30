@@ -15,12 +15,10 @@ namespace ConsolePL
             string pass = GetPassword();
             Console.WriteLine();
 
-
-
             //valid username password here
             Staff staff = new Staff() { UserName = userName, Password = pass };
             StaffBL sbl = new StaffBL();
-            staff  = sbl.Login(staff);
+            staff = sbl.Login(staff);
 
             if (staff == null)
             {
@@ -28,7 +26,72 @@ namespace ConsolePL
             }
             else
             {
-                Console.WriteLine("Wellcome to System...");
+                Console.WriteLine("Login");
+
+                if (staff.Role == staff.ROLE_SALE)
+                {
+
+                    int choice;
+                    do
+                    {
+                        Console.WriteLine("===================================================");
+                        Console.WriteLine("|\n LAPTOP SHOP T&G \n|");
+                        Console.WriteLine("===================================================");
+                        Console.WriteLine("1. SEARCH LATOP ");
+                        Console.WriteLine("2. CREATE ORDER");
+                        Console.WriteLine("3. EXITS");
+                        Console.WriteLine("===================================================");
+                        Console.Write("# YOUR CHOICE: ");
+                        choice = Convert.ToInt32(Console.ReadLine());
+                        switch (choice)
+                        {
+                            case 1:
+                                break;
+                            case 2:
+                                break;
+                            case 3:
+                                Environment.Exit(0);
+                                break;
+                            default:
+                                Console.WriteLine("Invalid!!!");
+                                Console.WriteLine("please choose again from 1 -3");
+                                Console.ReadLine();
+                                break;
+                        }
+                    } while (choice != 3);
+                }
+                else if (staff.Role == staff.ROLE_ACCOUNTANT)
+                {
+                    int choices;
+                    do
+                    {
+                        Console.WriteLine("===================================================");
+                        Console.WriteLine("|\n LAPTOP SHOP T&G \n|");
+                        Console.WriteLine("===================================================");
+                        Console.WriteLine("1. PAYMENT ");
+                        Console.WriteLine("2. EXITS");
+                        Console.WriteLine("===================================================");
+                        Console.WriteLine(" # YOUR CHOICES: ");
+                        choices = Convert.ToInt32(Console.ReadLine());
+                        switch (choices)
+                        {
+                            case 1:
+                                break;
+                            case 2:
+                                Environment.Exit(0);
+                                break;
+                            default:
+                                Console.WriteLine("Invalid!!!");
+                                Console.WriteLine("please choose again from 1 -2");
+                                Console.ReadLine();
+                                break;
+                        }
+                    } while (choices != 2);
+                }
+                else
+                {
+                    Console.WriteLine("Invalid!!");
+                }
             }
         }
 
