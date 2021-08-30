@@ -5,7 +5,7 @@ namespace DAL
 {
     public class MD5
     {
-         public static string CreateMD5(string input)
+        public static string CreateMD5(string input)
         {
             using (var provider = System.Security.Cryptography.MD5.Create())
             {

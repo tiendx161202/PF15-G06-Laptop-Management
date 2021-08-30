@@ -6,7 +6,7 @@ namespace DAL
 {
     public class StaffDAL
     {
-        public Staff Login (Staff staff)
+        public Staff Login(Staff staff)
         {
             try
             {
@@ -14,7 +14,7 @@ namespace DAL
             }
             catch (System.Exception)
             {
-                
+
                 throw;
             }
         }
