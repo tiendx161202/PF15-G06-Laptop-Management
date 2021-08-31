@@ -14,6 +14,8 @@ namespace Persistance
 
         public int ROLE_SALE = 1;
         public int ROLE_ACCOUNTANT = 2;
+        public int FAIL_LOGIN = 0;
+        public int EXCEPTION = -1;
 
 
     }

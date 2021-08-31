@@ -2,7 +2,6 @@
 using Persistance;
 using BL;
 
-
 namespace ConsolePL
 {
     class Program
@@ -10,13 +9,14 @@ namespace ConsolePL
         static void Main(string[] args)
         {
             StaffBL sbl = new StaffBL();
+            string userName;
+            string pass;
+            string ErrorMessage;
+
             Console.Clear();
             Console.WriteLine("=======================");
             Console.WriteLine("|        LOGIN        |");
             Console.WriteLine("=======================");
-            string userName;
-            string pass;
-            string ErrorMessage;
 
             do
             {
@@ -47,9 +47,15 @@ namespace ConsolePL
             Staff staff = new Staff() { UserName = userName, Password = pass };
             staff = sbl.Login(staff);
 
-            if (staff == null)
+            if (staff.Role == staff.FAIL_LOGIN)
             {
-                Console.WriteLine("Can't Login");
+                Console.WriteLine("User Name or Password is wrong!\nPress EnterKey to re-login or any key to Exit!");
+                var key = Console.ReadKey();
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    Main(args);
+                }
+                Environment.Exit(0);
             }
             else
             {
@@ -63,12 +69,14 @@ namespace ConsolePL
                         Console.WriteLine("|          LAPTOP SHOP T&G       |");
                         Console.WriteLine("|            Sale Menu           |");
                         Console.WriteLine("==================================");
-                        Console.WriteLine("1. SEARCH LATOP ");
+                        Console.WriteLine("1. SEARCH LAPTOP ");
                         Console.WriteLine("2. CREATE ORDER");
                         Console.WriteLine("3. EXIT");
                         Console.WriteLine("==================================");
                         Console.Write("# YOUR CHOICE: ");
-                        choice = Convert.ToInt32(Console.ReadLine());
+
+                        choice = CheckChoice(Console.ReadLine());
+
                         switch (choice)
                         {
                             case 1:
@@ -80,8 +88,8 @@ namespace ConsolePL
                                 Environment.Exit(0);
                                 break;
                             default:
-                                Console.WriteLine("Invalid!!!");
-                                Console.WriteLine("please choose again from 1 - 3");
+                                Console.WriteLine("Invalid! Please input 1 - 3");
+                                Console.WriteLine("Press any key to continue...");
                                 Console.ReadLine();
                                 break;
                         }
@@ -89,7 +97,7 @@ namespace ConsolePL
                 }
                 else if (staff.Role == staff.ROLE_ACCOUNTANT)
                 {
-                    int choices;
+                    int choice;
                     do
                     {
                         Console.Clear();
@@ -100,9 +108,10 @@ namespace ConsolePL
                         Console.WriteLine("1. PAY ");
                         Console.WriteLine("2. EXIT");
                         Console.WriteLine("==================================");
-                        Console.WriteLine(" # YOUR CHOICES: ");
-                        choices = Convert.ToInt32(Console.ReadLine());
-                        switch (choices)
+                        Console.WriteLine(" # YOUR CHOICE: ");
+                        choice = CheckChoice(Console.ReadLine());
+
+                        switch (choice)
                         {
                             case 1:
                                 break;
@@ -110,19 +119,14 @@ namespace ConsolePL
                                 Environment.Exit(0);
                                 break;
                             default:
-                                Console.WriteLine("Invalid!!!");
-                                Console.WriteLine("please choose again from 1 - 2");
+                                Console.WriteLine("Invalid! Please input 1 or 2");
+                                Console.WriteLine("Press any key to continue...");
                                 Console.ReadLine();
                                 break;
                         }
-                    } while (choices != 2);
-                }
-                else
-                {
-                    Console.WriteLine("Invalid!!");
+                    } while (choice != 2);
                 }
             }
-
         }
 
         static string GetPassword()
@@ -149,7 +153,7 @@ namespace ConsolePL
         }
         static void SearchMenu()
         {
-            int choicess;
+            int choice;
             do
             {
                 Console.Clear();
@@ -158,40 +162,58 @@ namespace ConsolePL
                 Console.WriteLine("|1. SEARCH ID                    |");
                 Console.WriteLine("|2. SEARCH NAME                  |");
                 Console.WriteLine("|3. SEARCH PRICE                 |");
-                Console.WriteLine("|4.Exit                          |");
+                Console.WriteLine("|4. Exit                          |");
                 Console.WriteLine("==================================");
                 Console.WriteLine("# YOUR CHOICE: ");
-                choicess = Convert.ToInt32(Console.ReadLine());
-                switch (choicess)
+                choice = CheckChoice(Console.ReadLine());
+                switch (choice)
                 {
                     case 1:
-                        Console.Clear();
-                        Console.WriteLine("==================================");
-                        Console.WriteLine(" SEARCH ID:");
-                        Console.ReadLine();
+                    //     Console.Clear();
+                    //     Console.WriteLine("==================================");
+                    //     Console.WriteLine(" SEARCH ID:");
+                    //     Console.ReadLine();
                         break;
                     case 2:
-                        Console.Clear();
-                        Console.WriteLine("==================================");
-                        Console.WriteLine(" SEARCH NAME:");
-                        Console.ReadLine();
+                        // Console.Clear();
+                        // Console.WriteLine("==================================");
+                        // Console.WriteLine(" SEARCH NAME:");
+                        // Console.ReadLine();
                         break;
                     case 3:
-                        Console.Clear();
-                        Console.WriteLine("==================================");
-                        Console.WriteLine(" SEARCH PRICE:");
+                        // Console.Clear();
+                        // Console.WriteLine("==================================");
+                        // Console.WriteLine(" SEARCH PRICE:");
                         Console.ReadLine();
                         break;
                     case 4:
                         Environment.Exit(0);
                         break;
                     default:
-                        Console.WriteLine("Invalid!!!");
-                        Console.WriteLine("please choose again from 1 - 4");
+                        Console.WriteLine("Invalid! Please input 1 - 4");
+                        Console.WriteLine("Press any key to continue...");
                         Console.ReadLine();
                         break;
                 }
-            } while (choicess != 4);
+            } while (choice != 4);
         }
+
+        private static int CheckChoice(string choice)
+        {
+            // catch if not a number
+
+            int menuChoice = 0;
+
+            try
+            {
+                menuChoice = Convert.ToInt32(choice);
+            }
+            catch
+            {
+                return menuChoice;
+            }
+            return menuChoice;
+        }
+
     }
 }
