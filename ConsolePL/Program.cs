@@ -72,6 +72,7 @@ namespace ConsolePL
                         switch (choice)
                         {
                             case 1:
+                                SearchMenu();
                                 break;
                             case 2:
                                 break;
@@ -121,6 +122,7 @@ namespace ConsolePL
                     Console.WriteLine("Invalid!!");
                 }
             }
+
         }
 
         static string GetPassword()
@@ -145,6 +147,51 @@ namespace ConsolePL
             } while (key != ConsoleKey.Enter);
             return pass;
         }
-
+        static void SearchMenu()
+        {
+            int choicess;
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("==================================");
+                Console.WriteLine("|            SEARCH              |");
+                Console.WriteLine("|1. SEARCH ID                    |");
+                Console.WriteLine("|2. SEARCH NAME                  |");
+                Console.WriteLine("|3. SEARCH PRICE                 |");
+                Console.WriteLine("|4.Exit                          |");
+                Console.WriteLine("==================================");
+                Console.WriteLine("# YOUR CHOICE: ");
+                choicess = Convert.ToInt32(Console.ReadLine());
+                switch (choicess)
+                {
+                    case 1:
+                        Console.Clear();
+                        Console.WriteLine("==================================");
+                        Console.WriteLine(" SEARCH ID:");
+                        Console.ReadLine();
+                        break;
+                    case 2:
+                        Console.Clear();
+                        Console.WriteLine("==================================");
+                        Console.WriteLine(" SEARCH NAME:");
+                        Console.ReadLine();
+                        break;
+                    case 3:
+                        Console.Clear();
+                        Console.WriteLine("==================================");
+                        Console.WriteLine(" SEARCH PRICE:");
+                        Console.ReadLine();
+                        break;
+                    case 4:
+                        Environment.Exit(0);
+                        break;
+                    default:
+                        Console.WriteLine("Invalid!!!");
+                        Console.WriteLine("please choose again from 1 - 4");
+                        Console.ReadLine();
+                        break;
+                }
+            } while (choicess != 4);
+        }
     }
 }
