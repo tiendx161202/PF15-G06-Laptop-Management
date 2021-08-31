@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BL", "BL\BL.csproj", "{4428
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsolePL", "ConsolePL\ConsolePL.csproj", "{02C31A60-7674-497C-BD9D-90E644E6CFFA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DALTest", "DALTest\DALTest.csproj", "{82D3DE93-647E-4420-B3E8-939CC1436234}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +74,17 @@ Global
 		{02C31A60-7674-497C-BD9D-90E644E6CFFA}.Release|x64.Build.0 = Release|Any CPU
 		{02C31A60-7674-497C-BD9D-90E644E6CFFA}.Release|x86.ActiveCfg = Release|Any CPU
 		{02C31A60-7674-497C-BD9D-90E644E6CFFA}.Release|x86.Build.0 = Release|Any CPU
+		{82D3DE93-647E-4420-B3E8-939CC1436234}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82D3DE93-647E-4420-B3E8-939CC1436234}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82D3DE93-647E-4420-B3E8-939CC1436234}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{82D3DE93-647E-4420-B3E8-939CC1436234}.Debug|x64.Build.0 = Debug|Any CPU
+		{82D3DE93-647E-4420-B3E8-939CC1436234}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{82D3DE93-647E-4420-B3E8-939CC1436234}.Debug|x86.Build.0 = Debug|Any CPU
+		{82D3DE93-647E-4420-B3E8-939CC1436234}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82D3DE93-647E-4420-B3E8-939CC1436234}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82D3DE93-647E-4420-B3E8-939CC1436234}.Release|x64.ActiveCfg = Release|Any CPU
+		{82D3DE93-647E-4420-B3E8-939CC1436234}.Release|x64.Build.0 = Release|Any CPU
+		{82D3DE93-647E-4420-B3E8-939CC1436234}.Release|x86.ActiveCfg = Release|Any CPU
+		{82D3DE93-647E-4420-B3E8-939CC1436234}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
