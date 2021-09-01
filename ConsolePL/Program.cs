@@ -9,42 +9,16 @@ namespace ConsolePL
         static void Main(string[] args)
         {
             StaffBL sbl = new StaffBL();
-            string userName;
-            string pass;
-            string ErrorMessage;
 
             Console.Clear();
             Console.WriteLine("=======================");
             Console.WriteLine("|        LOGIN        |");
             Console.WriteLine("=======================");
 
-            do
-            {
-                Console.Write("\nUser Name: ");
-                userName = Console.ReadLine();
-                sbl.ValidateUserName(userName, out ErrorMessage);
+            string UserName = InputUserName(sbl);
+            string Password = InputPassword(sbl);
 
-                if (ErrorMessage != null)
-                {
-                    Console.WriteLine(ErrorMessage);
-                }
-            }
-            while (sbl.ValidateUserName(userName, out ErrorMessage) == false);
-
-            do
-            {
-                Console.Write("Password: ");
-                pass = GetPassword();
-                sbl.ValidatePassword(pass, out ErrorMessage);
-
-                if (ErrorMessage != null)
-                {
-                    Console.WriteLine("\n" + ErrorMessage);
-                }
-                Console.WriteLine();
-            } while (sbl.ValidatePassword(pass, out ErrorMessage) == false);
-
-            Staff staff = new Staff() { UserName = userName, Password = pass };
+            Staff staff = new Staff() { UserName = UserName, Password = Password };
             staff = sbl.Login(staff);
 
             if (staff.Role == staff.FAIL_LOGIN)
@@ -61,75 +35,16 @@ namespace ConsolePL
             {
                 if (staff.Role == staff.ROLE_SALE)
                 {
-                    int choice;
-                    do
-                    {
-                        Console.Clear();
-                        Console.WriteLine("==================================");
-                        Console.WriteLine("|          LAPTOP SHOP T&G       |");
-                        Console.WriteLine("|            Sale Menu           |");
-                        Console.WriteLine("==================================");
-                        Console.WriteLine("1. SEARCH LAPTOP ");
-                        Console.WriteLine("2. CREATE ORDER");
-                        Console.WriteLine("3. EXIT");
-                        Console.WriteLine("==================================");
-                        Console.Write("# YOUR CHOICE: ");
-
-                        choice = CheckChoice(Console.ReadLine());
-
-                        switch (choice)
-                        {
-                            case 1:
-                                SearchMenu();
-                                break;
-                            case 2:
-                                break;
-                            case 3:
-                                Environment.Exit(0);
-                                break;
-                            default:
-                                Console.WriteLine("Invalid! Please input 1 - 3");
-                                Console.WriteLine("Press any key to continue...");
-                                Console.ReadLine();
-                                break;
-                        }
-                    } while (choice != 3);
+                    SaleMenu();
                 }
                 else if (staff.Role == staff.ROLE_ACCOUNTANT)
                 {
-                    int choice;
-                    do
-                    {
-                        Console.Clear();
-                        Console.WriteLine("==================================");
-                        Console.WriteLine("|        LAPTOP SHOP T&G         |");
-                        Console.WriteLine("|        Accountant Menu         |");
-                        Console.WriteLine("==================================");
-                        Console.WriteLine("1. PAY ");
-                        Console.WriteLine("2. EXIT");
-                        Console.WriteLine("==================================");
-                        Console.WriteLine(" # YOUR CHOICE: ");
-                        choice = CheckChoice(Console.ReadLine());
-
-                        switch (choice)
-                        {
-                            case 1:
-                                break;
-                            case 2:
-                                Environment.Exit(0);
-                                break;
-                            default:
-                                Console.WriteLine("Invalid! Please input 1 or 2");
-                                Console.WriteLine("Press any key to continue...");
-                                Console.ReadLine();
-                                break;
-                        }
-                    } while (choice != 2);
+                    AccountantMenu();
                 }
             }
         }
 
-        static string GetPassword()
+        static string HidePassword()
         {
             var pass = string.Empty;
             ConsoleKey key;
@@ -151,7 +66,8 @@ namespace ConsolePL
             } while (key != ConsoleKey.Enter);
             return pass;
         }
-        static void SearchMenu()
+
+        private static void SearchMenu()
         {
             int choice;
             do
@@ -169,10 +85,10 @@ namespace ConsolePL
                 switch (choice)
                 {
                     case 1:
-                    //     Console.Clear();
-                    //     Console.WriteLine("==================================");
-                    //     Console.WriteLine(" SEARCH ID:");
-                    //     Console.ReadLine();
+                        //     Console.Clear();
+                        //     Console.WriteLine("==================================");
+                        //     Console.WriteLine(" SEARCH ID:");
+                        //     Console.ReadLine();
                         break;
                     case 2:
                         // Console.Clear();
@@ -196,6 +112,116 @@ namespace ConsolePL
                         break;
                 }
             } while (choice != 4);
+        }
+
+        private static void AccountantMenu()
+        {
+            int choice;
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("==================================");
+                Console.WriteLine("|        LAPTOP SHOP T&G         |");
+                Console.WriteLine("|        Accountant Menu         |");
+                Console.WriteLine("==================================");
+                Console.WriteLine("1. PAY ");
+                Console.WriteLine("2. EXIT");
+                Console.WriteLine("==================================");
+                Console.WriteLine(" # YOUR CHOICE: ");
+                choice = CheckChoice(Console.ReadLine());
+
+                switch (choice)
+                {
+                    case 1:
+                        break;
+                    case 2:
+                        Environment.Exit(0);
+                        break;
+                    default:
+                        Console.WriteLine("Invalid! Please input 1 or 2");
+                        Console.WriteLine("Press any key to continue...");
+                        Console.ReadLine();
+                        break;
+                }
+            } while (choice != 2);
+        }
+
+        private static void SaleMenu()
+        {
+            int choice;
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("==================================");
+                Console.WriteLine("|          LAPTOP SHOP T&G       |");
+                Console.WriteLine("|            Sale Menu           |");
+                Console.WriteLine("==================================");
+                Console.WriteLine("1. SEARCH LAPTOP ");
+                Console.WriteLine("2. CREATE ORDER");
+                Console.WriteLine("3. EXIT");
+                Console.WriteLine("==================================");
+                Console.Write("# YOUR CHOICE: ");
+
+                choice = CheckChoice(Console.ReadLine());
+
+                switch (choice)
+                {
+                    case 1:
+                        SearchMenu();
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        Environment.Exit(0);
+                        break;
+                    default:
+                        Console.WriteLine("Invalid! Please input 1 - 3");
+                        Console.WriteLine("Press any key to continue...");
+                        Console.ReadLine();
+                        break;
+                }
+            } while (choice != 3);
+        }
+
+        private static string InputUserName(StaffBL sbl)
+        {
+            string ErrorMessage;
+            string userName;
+            do
+            {
+                Console.Write("\nUser Name: ");
+                userName = Console.ReadLine();
+                sbl.ValidateUserName(userName, out ErrorMessage);
+
+                if (ErrorMessage != null)
+                {
+                    Console.WriteLine(ErrorMessage);
+                }
+            }
+            while (sbl.ValidateUserName(userName, out ErrorMessage) == false);
+
+            return userName;
+        }
+
+        private static string InputPassword(StaffBL sbl)
+        {
+            string Password;
+            string ErrorMessage;
+
+            do
+            {
+                Console.Write("Password: ");
+                Password = HidePassword();
+                sbl.ValidatePassword(Password, out ErrorMessage);
+
+                if (ErrorMessage != null)
+                {
+                    Console.WriteLine("\n" + ErrorMessage);
+                }
+                Console.WriteLine();
+            } while (sbl.ValidatePassword(Password, out ErrorMessage) == false);
+
+            return Password;
         }
 
         private static int CheckChoice(string choice)
