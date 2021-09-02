@@ -8,8 +8,13 @@ namespace ConsolePL
     {
         static void Main(string[] args)
         {
-            StaffBL sbl = new StaffBL();
+            Login();
+        }
 
+        private static void Login()
+        {
+            StaffBL sbl = new StaffBL();
+            
             Console.Clear();
             Console.WriteLine("=======================");
             Console.WriteLine("|        LOGIN        |");
@@ -27,7 +32,7 @@ namespace ConsolePL
                 var key = Console.ReadKey();
                 if (key.Key == ConsoleKey.Enter)
                 {
-                    Main(args);
+                    Login();
                 }
                 Environment.Exit(0);
             }
@@ -44,27 +49,71 @@ namespace ConsolePL
             }
         }
 
-        static string HidePassword()
+        private static void SearchId()
         {
-            var pass = string.Empty;
-            ConsoleKey key;
+            int _LaptopId = 0;
+            
+            LaptopBL lbl = new LaptopBL();
+
             do
             {
-                var keyInfo = Console.ReadKey(intercept: true);
-                key = keyInfo.Key;
+                Console.Write("Input your Laptop ID: ");
+                _LaptopId = CheckChoice(Console.ReadLine());
+                if (_LaptopId == 0)
+                {
+                    Console.WriteLine("Your Laptop ID is invalid, re-input ...");
+                }
+            }
+            while (_LaptopId == 0);
 
-                if (key == ConsoleKey.Backspace && pass.Length > 0)
-                {
-                    Console.Write("\b \b");
-                    pass = pass[0..^1];
-                }
-                else if (!char.IsControl(keyInfo.KeyChar))
-                {
-                    Console.Write("*");
-                    pass += keyInfo.KeyChar;
-                }
-            } while (key != ConsoleKey.Enter);
-            return pass;
+            Laptop laptop = new Laptop() { LaptopId = _LaptopId };
+            laptop = lbl.GetLaptop(laptop);
+
+            if (laptop.Status == Laptop.LaptopStatus.ID_NOT_FOUND)
+            {
+                Console.WriteLine("Not found");
+            }
+            else
+            {
+                DisplayLaptopInfo(laptop);
+            }
+
+        }
+
+        private static void DisplayLaptopInfo(Laptop laptop)
+        {
+            Console.Clear();
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.WriteLine("==================================");
+            Console.WriteLine("|        Laptop information       |");
+            Console.WriteLine("==================================");
+            Console.WriteLine(" ID             : "+ laptop.LaptopId);
+            Console.WriteLine(" Brand          : "+ laptop.BrandName);
+            Console.WriteLine(" Name           : "+ laptop.Name);
+            Console.WriteLine(" Price          : "+ laptop.Price);
+            Console.WriteLine(" CPU            : "+ laptop.Cpu);
+            Console.WriteLine(" RAM            : "+ laptop.Ram);
+            Console.WriteLine(" Hard Disk      : "+ laptop.HardDisk);
+            Console.WriteLine(" Monitor        : "+ laptop.Monitor);
+            Console.WriteLine(" Graphics Card  : "+ laptop.GraphicsCard);
+            Console.WriteLine(" Jack           : "+ laptop.Jack);
+            Console.WriteLine(" OS             : "+ laptop.Os);
+            Console.WriteLine(" Battery        : "+ laptop.Battery);
+            Console.WriteLine(" Weight         : "+ laptop.Weight);
+            Console.WriteLine(" Warranty Period: "+ laptop.WarrantyPeriod);
+
+            string status = "";
+            if (laptop.Status == Laptop.LaptopStatus.ACTIVE)
+            {
+                status = "Active";
+            }
+            else if (laptop.Status == Laptop.LaptopStatus.NOT_ACTIVE)
+            {
+                status = "Inactive";
+            }
+            Console.WriteLine(" Status         : "+ status);
+            Console.ReadKey();
+
         }
 
         private static void SearchMenu()
@@ -78,17 +127,14 @@ namespace ConsolePL
                 Console.WriteLine("|1. SEARCH ID                    |");
                 Console.WriteLine("|2. SEARCH NAME                  |");
                 Console.WriteLine("|3. SEARCH PRICE                 |");
-                Console.WriteLine("|4. Exit                          |");
+                Console.WriteLine("|4. Back to \"Sale Menu\"        |");
                 Console.WriteLine("==================================");
-                Console.WriteLine("# YOUR CHOICE: ");
+                Console.Write("# YOUR CHOICE: ");
                 choice = CheckChoice(Console.ReadLine());
                 switch (choice)
                 {
                     case 1:
-                        //     Console.Clear();
-                        //     Console.WriteLine("==================================");
-                        //     Console.WriteLine(" SEARCH ID:");
-                        //     Console.ReadLine();
+                        SearchId();
                         break;
                     case 2:
                         // Console.Clear();
@@ -103,7 +149,7 @@ namespace ConsolePL
                         Console.ReadLine();
                         break;
                     case 4:
-                        Environment.Exit(0);
+                        SaleMenu();
                         break;
                     default:
                         Console.WriteLine("Invalid! Please input 1 - 4");
@@ -158,7 +204,7 @@ namespace ConsolePL
                 Console.WriteLine("==================================");
                 Console.WriteLine("1. SEARCH LAPTOP ");
                 Console.WriteLine("2. CREATE ORDER");
-                Console.WriteLine("3. EXIT");
+                Console.WriteLine("3. LOGOUT");
                 Console.WriteLine("==================================");
                 Console.Write("# YOUR CHOICE: ");
 
@@ -172,7 +218,7 @@ namespace ConsolePL
                     case 2:
                         break;
                     case 3:
-                        Environment.Exit(0);
+                        Login();
                         break;
                     default:
                         Console.WriteLine("Invalid! Please input 1 - 3");
@@ -239,6 +285,29 @@ namespace ConsolePL
                 return menuChoice;
             }
             return menuChoice;
+        }
+
+        private static string HidePassword()
+        {
+            var pass = string.Empty;
+            ConsoleKey key;
+            do
+            {
+                var keyInfo = Console.ReadKey(intercept: true);
+                key = keyInfo.Key;
+
+                if (key == ConsoleKey.Backspace && pass.Length > 0)
+                {
+                    Console.Write("\b \b");
+                    pass = pass[0..^1];
+                }
+                else if (!char.IsControl(keyInfo.KeyChar))
+                {
+                    Console.Write("*");
+                    pass += keyInfo.KeyChar;
+                }
+            } while (key != ConsoleKey.Enter);
+            return pass;
         }
 
     }

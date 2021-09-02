@@ -32,7 +32,7 @@ namespace DAL
                 }
                 else
                 {
-                    staff.Role = 0;
+                    staff.Role = staff.FAIL_LOGIN;
                 }
                 reader.Close();
                 connection.Close();
@@ -40,7 +40,7 @@ namespace DAL
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                staff.Role = -1;
+                staff.Role = staff.EXCEPTION;
             }
             // Console.WriteLine(login);
             return staff;
