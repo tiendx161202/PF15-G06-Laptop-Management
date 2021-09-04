@@ -1,6 +1,7 @@
 ﻿using System;
 using Persistance;
 using BL;
+using System.Collections.Generic;
 
 namespace ConsolePL
 {
@@ -8,13 +9,41 @@ namespace ConsolePL
     {
         static void Main(string[] args)
         {
+            SearchName();
             Login();
+        }
+
+        private static void SearchName()
+        {
+            string _name = "";
+            LaptopBL lbl = new LaptopBL();
+
+            Console.Write("Input your search: ");
+            _name = Console.ReadLine();
+
+            Laptop laptop = new Laptop() { Name = _name };
+            List<Laptop> LaptopList = new List<Laptop>();
+            LaptopList = lbl.GetLaptopByName(laptop);
+
+            foreach (Laptop lt in LaptopList)
+            {
+                // if(string.Compare(lt.Name, _name) == 0)
+                    // {
+                    Console.WriteLine("{0}| {1}", lt.Name, lt.Cpu);
+                    Console.WriteLine("--------------------------");
+
+                    // Console.WriteLine(LaptopList.IndexOf(lt));
+                    // DisplayLaptopInfo(lt);
+                // }
+            }
+            Console.ReadKey();
+
         }
 
         private static void Login()
         {
             StaffBL sbl = new StaffBL();
-            
+
             Console.Clear();
             Console.WriteLine("=======================");
             Console.WriteLine("|        LOGIN        |");
@@ -52,7 +81,7 @@ namespace ConsolePL
         private static void SearchId()
         {
             int _LaptopId = 0;
-            
+
             LaptopBL lbl = new LaptopBL();
 
             do
@@ -87,20 +116,20 @@ namespace ConsolePL
             Console.WriteLine("==================================");
             Console.WriteLine("|        Laptop information       |");
             Console.WriteLine("==================================");
-            Console.WriteLine(" ID             : "+ laptop.LaptopId);
-            Console.WriteLine(" Brand          : "+ laptop.BrandName);
-            Console.WriteLine(" Name           : "+ laptop.Name);
-            Console.WriteLine(" Price          : "+ laptop.Price);
-            Console.WriteLine(" CPU            : "+ laptop.Cpu);
-            Console.WriteLine(" RAM            : "+ laptop.Ram);
-            Console.WriteLine(" Hard Disk      : "+ laptop.HardDisk);
-            Console.WriteLine(" Monitor        : "+ laptop.Monitor);
-            Console.WriteLine(" Graphics Card  : "+ laptop.GraphicsCard);
-            Console.WriteLine(" Jack           : "+ laptop.Jack);
-            Console.WriteLine(" OS             : "+ laptop.Os);
-            Console.WriteLine(" Battery        : "+ laptop.Battery);
-            Console.WriteLine(" Weight         : "+ laptop.Weight);
-            Console.WriteLine(" Warranty Period: "+ laptop.WarrantyPeriod);
+            Console.WriteLine(" ID             : " + laptop.LaptopId);
+            Console.WriteLine(" Brand          : " + laptop.BrandName);
+            Console.WriteLine(" Name           : " + laptop.Name);
+            Console.WriteLine(" Price          : " + laptop.Price);
+            Console.WriteLine(" CPU            : " + laptop.Cpu);
+            Console.WriteLine(" RAM            : " + laptop.Ram);
+            Console.WriteLine(" Hard Disk      : " + laptop.HardDisk);
+            Console.WriteLine(" Monitor        : " + laptop.Monitor);
+            Console.WriteLine(" Graphics Card  : " + laptop.GraphicsCard);
+            Console.WriteLine(" Jack           : " + laptop.Jack);
+            Console.WriteLine(" OS             : " + laptop.Os);
+            Console.WriteLine(" Battery        : " + laptop.Battery);
+            Console.WriteLine(" Weight         : " + laptop.Weight);
+            Console.WriteLine(" Warranty Period: " + laptop.WarrantyPeriod);
 
             string status = "";
             if (laptop.Status == Laptop.LaptopStatus.ACTIVE)
@@ -111,7 +140,7 @@ namespace ConsolePL
             {
                 status = "Inactive";
             }
-            Console.WriteLine(" Status         : "+ status);
+            Console.WriteLine(" Status         : " + status);
             Console.ReadKey();
 
         }
@@ -137,10 +166,7 @@ namespace ConsolePL
                         SearchId();
                         break;
                     case 2:
-                        // Console.Clear();
-                        // Console.WriteLine("==================================");
-                        // Console.WriteLine(" SEARCH NAME:");
-                        // Console.ReadLine();
+                        SearchName();
                         break;
                     case 3:
                         // Console.Clear();
