@@ -2,13 +2,13 @@
 using Persistance;
 using BL;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using ConsoleTables;
 
 namespace ConsolePL
 {
     class Program
     {
+        // static int tableWidth = 170;
         static void Main(string[] args)
         {
             SearchName();
@@ -27,24 +27,19 @@ namespace ConsolePL
             List<Laptop> LaptopList = new List<Laptop>();
             LaptopList = lbl.GetLaptopByName(laptop);
 
-            Console.WriteLine("=================================================================================================");
-            Console.WriteLine("|                                       SUCCESSFUL SEARCH                                       |");
-            Console.WriteLine("=================================================================================================");
-            Console.WriteLine("|ID | NAME\t      | PRICE\t      | CPU\t   |RAM\t|  GRAPHICSCARAD \t| HARDDISK\t| MONITOR\t|OS\t|");
-            Console.WriteLine("=================================================================================================");
-
+            var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE");
 
             foreach (Laptop lt in LaptopList)
             {
-                // if(string.Compare(lt.Name, _name) == 0)
-                // {
-                Console.WriteLine("|{0}| {1} | {2}| {3} | {4} | {5} |{6} |{7}| {8} | {9} |", lt.LaptopId, lt.Name, lt.Price, lt.Cpu, lt.Ram, lt.GraphicsCard, lt.HardDisk, lt.Monitor, lt.Os);
-                Console.WriteLine("=================================================================================================");
+
+                Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
+
+                table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, lt.Price.ToString());
 
                 //Console.WriteLine(LaptopList.IndexOf(lt));
                 //DisplayLaptopInfo(lt);
-                // }
             }
+            table.Write(ConsoleTables.Format.Alternative);
             Console.ReadKey();
 
         }
