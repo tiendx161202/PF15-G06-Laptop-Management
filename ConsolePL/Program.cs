@@ -2,6 +2,8 @@
 using Persistance;
 using BL;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace ConsolePL
 {
@@ -25,15 +27,22 @@ namespace ConsolePL
             List<Laptop> LaptopList = new List<Laptop>();
             LaptopList = lbl.GetLaptopByName(laptop);
 
+            Console.WriteLine("=================================================================================================");
+            Console.WriteLine("|                                       SUCCESSFUL SEARCH                                       |");
+            Console.WriteLine("=================================================================================================");
+            Console.WriteLine("|ID | NAME\t      | PRICE\t      | CPU\t   |RAM\t|  GRAPHICSCARAD \t| HARDDISK\t| MONITOR\t|OS\t|");
+            Console.WriteLine("=================================================================================================");
+
+
             foreach (Laptop lt in LaptopList)
             {
                 // if(string.Compare(lt.Name, _name) == 0)
-                    // {
-                    Console.WriteLine("{0}| {1}", lt.Name, lt.Cpu);
-                    Console.WriteLine("--------------------------");
+                // {
+                Console.WriteLine("|{0}| {1} | {2}| {3} | {4} | {5} |{6} |{7}| {8} | {9} |", lt.LaptopId, lt.Name, lt.Price, lt.Cpu, lt.Ram, lt.GraphicsCard, lt.HardDisk, lt.Monitor, lt.Os);
+                Console.WriteLine("=================================================================================================");
 
-                    // Console.WriteLine(LaptopList.IndexOf(lt));
-                    // DisplayLaptopInfo(lt);
+                //Console.WriteLine(LaptopList.IndexOf(lt));
+                //DisplayLaptopInfo(lt);
                 // }
             }
             Console.ReadKey();
