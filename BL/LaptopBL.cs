@@ -1,7 +1,6 @@
 using System;
 using Persistance;
 using DAL;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
 namespace BL
@@ -16,9 +15,18 @@ namespace BL
             return dal.GetLaptop(laptop);
         }
 
+        public List<Laptop> GetLaptopByPrice(Laptop laptop)
+        {
+            return sdal.GetLaptops(LaptopFilter.FILTER_BY_LAPTOP_PRICE, laptop);
+        }
+        public List<Laptop> GetAllLaptop(Laptop laptop)
+        {
+            return sdal.GetLaptops(LaptopFilter.GET_ALL, laptop);
+        }
+
         public List<Laptop> GetLaptopByName(Laptop laptop)
         {
-            return sdal.GetLaptopByName(laptop);
+            return sdal.GetLaptops(LaptopFilter.FILTER_BY_LAPTOP_NAME, laptop);
         }
     }
 }

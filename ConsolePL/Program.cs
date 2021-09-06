@@ -8,78 +8,115 @@ namespace ConsolePL
 {
     class Program
     {
-        // static int tableWidth = 170;
         static void Main(string[] args)
         {
-            SearchName();
             Login();
         }
 
-        private static void SearchName()
+        private static void SearchPrice()
         {
-            string _name = "";
+            int _minPrice = 0;
+            int _maxPrice = 0;
+
             LaptopBL lbl = new LaptopBL();
-
-            Console.Write("Input your search: ");
-            _name = Console.ReadLine();
-
-            Laptop laptop = new Laptop() { Name = _name };
             List<Laptop> LaptopList = new List<Laptop>();
-            LaptopList = lbl.GetLaptopByName(laptop);
 
-            var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE");
+            Console.Write("Input min price: ");
+            _minPrice = Convert.ToInt32(Console.ReadLine());
+            Console.Write("Input max price: ");
+            _maxPrice = Convert.ToInt32(Console.ReadLine());
+
+            Laptop laptop = new Laptop() { minPrice = _minPrice, maxPrice = _maxPrice };
+            LaptopList = lbl.GetLaptopByPrice(laptop);
+
+            Console.Clear();
+            Console.WriteLine("\nResult for price range Min: {0} - Max: {1}\n", laptop.minPrice, laptop.maxPrice);
+            var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE", "STATUS");
 
             foreach (Laptop lt in LaptopList)
             {
-
                 Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
+                string sts;
+                if (lt.Status == Laptop.LaptopStatus.ACTIVE)
+                {
+                    sts = "ACTIVE";
+                }
+                else
+                {
+                    sts = "NOT ACTIVE";
+                }
 
-                table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, lt.Price.ToString());
+                table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, lt.Price.ToString(), sts);
 
                 //Console.WriteLine(LaptopList.IndexOf(lt));
                 //DisplayLaptopInfo(lt);
             }
             table.Write(ConsoleTables.Format.Alternative);
             Console.ReadKey();
-
         }
 
-        private static void Login()
+        private static void ShowAll()
         {
-            StaffBL sbl = new StaffBL();
+            LaptopBL lbl = new LaptopBL();
+            Laptop laptop = new Laptop() { };
+            List<Laptop> LaptopList = new List<Laptop>();
+
+            LaptopList = lbl.GetAllLaptop(laptop);
 
             Console.Clear();
-            Console.WriteLine("=======================");
-            Console.WriteLine("|        LOGIN        |");
-            Console.WriteLine("=======================");
+            Console.WriteLine("\nALL LAPTOP\n");
+            var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE", "STATUS");
 
-            string UserName = InputUserName(sbl);
-            string Password = InputPassword(sbl);
-
-            Staff staff = new Staff() { UserName = UserName, Password = Password };
-            staff = sbl.Login(staff);
-
-            if (staff.Role == staff.FAIL_LOGIN)
+            foreach (Laptop lt in LaptopList)
             {
-                Console.WriteLine("User Name or Password is wrong!\nPress EnterKey to re-login or any key to Exit!");
-                var key = Console.ReadKey();
-                if (key.Key == ConsoleKey.Enter)
+                Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
+                string sts;
+                if (lt.Status == Laptop.LaptopStatus.ACTIVE)
                 {
-                    Login();
+                    sts = "ACTIVE";
                 }
-                Environment.Exit(0);
+                else
+                {
+                    sts = "NOT ACTIVE";
+                }
+                table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, lt.Price.ToString(), sts);
             }
-            else
+            table.Write(ConsoleTables.Format.Alternative);
+            Console.ReadKey();
+        }
+
+        private static void SearchName()
+        {
+            string _name = "";
+            LaptopBL lbl = new LaptopBL();
+            List<Laptop> LaptopList = new List<Laptop>();
+
+            Console.Write("Input your search: ");
+            _name = Console.ReadLine();
+
+            Laptop laptop = new Laptop() { Name = _name };
+            LaptopList = lbl.GetLaptopByName(laptop);
+
+            Console.Clear();
+            Console.WriteLine("\nResult for: \"{0}\"\n", _name);
+            var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE", "STATUS");
+
+            foreach (Laptop lt in LaptopList)
             {
-                if (staff.Role == staff.ROLE_SALE)
+                Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
+                string sts;
+                if (lt.Status == Laptop.LaptopStatus.ACTIVE)
                 {
-                    SaleMenu();
+                    sts = "ACTIVE";
                 }
-                else if (staff.Role == staff.ROLE_ACCOUNTANT)
+                else
                 {
-                    AccountantMenu();
+                    sts = "NOT ACTIVE";
                 }
+                table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, lt.Price.ToString(), sts);
             }
+            table.Write(ConsoleTables.Format.Alternative);
+            Console.ReadKey();
         }
 
         private static void SearchId()
@@ -160,7 +197,8 @@ namespace ConsolePL
                 Console.WriteLine("|1. SEARCH ID                    |");
                 Console.WriteLine("|2. SEARCH NAME                  |");
                 Console.WriteLine("|3. SEARCH PRICE                 |");
-                Console.WriteLine("|4. Back to \"Sale Menu\"        |");
+                Console.WriteLine("|4. SHOW ALL                     |");
+                Console.WriteLine("|5. Back to \"Sale Menu\"          |");
                 Console.WriteLine("==================================");
                 Console.Write("# YOUR CHOICE: ");
                 choice = CheckChoice(Console.ReadLine());
@@ -173,21 +211,21 @@ namespace ConsolePL
                         SearchName();
                         break;
                     case 3:
-                        // Console.Clear();
-                        // Console.WriteLine("==================================");
-                        // Console.WriteLine(" SEARCH PRICE:");
-                        Console.ReadLine();
+                        SearchPrice();
                         break;
                     case 4:
+                        ShowAll();
+                        break;
+                    case 5:
                         SaleMenu();
                         break;
                     default:
-                        Console.WriteLine("Invalid! Please input 1 - 4");
+                        Console.WriteLine("Invalid! Please input 1 - 5");
                         Console.WriteLine("Press any key to continue...");
                         Console.ReadLine();
                         break;
                 }
-            } while (choice != 4);
+            } while (choice != 5);
         }
 
         private static void AccountantMenu()
@@ -298,6 +336,44 @@ namespace ConsolePL
             } while (sbl.ValidatePassword(Password, out ErrorMessage) == false);
 
             return Password;
+        }
+
+        private static void Login()
+        {
+            StaffBL sbl = new StaffBL();
+
+            Console.Clear();
+            Console.WriteLine("=======================");
+            Console.WriteLine("|        LOGIN        |");
+            Console.WriteLine("=======================");
+
+            string UserName = InputUserName(sbl);
+            string Password = InputPassword(sbl);
+
+            Staff staff = new Staff() { UserName = UserName, Password = Password };
+            staff = sbl.Login(staff);
+
+            if (staff.Role == staff.FAIL_LOGIN)
+            {
+                Console.WriteLine("User Name or Password is wrong!\nPress EnterKey to re-login or any key to Exit!");
+                var key = Console.ReadKey();
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    Login();
+                }
+                Environment.Exit(0);
+            }
+            else
+            {
+                if (staff.Role == staff.ROLE_SALE)
+                {
+                    SaleMenu();
+                }
+                else if (staff.Role == staff.ROLE_ACCOUNTANT)
+                {
+                    AccountantMenu();
+                }
+            }
         }
 
         private static int CheckChoice(string choice)

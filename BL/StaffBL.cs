@@ -14,24 +14,6 @@ namespace BL
             return dal.Login(staff);
         }
 
-        public bool IsEmptyOrWhitespace(string check)
-        {
-            if (string.IsNullOrEmpty(check) == true || string.IsNullOrWhiteSpace(check) == true)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public bool IsValidLength(string check)
-        {
-            if (check.Length < 6)
-            {
-                return false;
-            }
-            return true;
-        }
-
         public bool ValidatePassword(string password, out string ErrorMessage)
         {
             var input = password;

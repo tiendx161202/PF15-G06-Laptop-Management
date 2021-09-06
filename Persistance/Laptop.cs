@@ -21,6 +21,8 @@ namespace Persistance
         public string WarrantyPeriod { set; get; }
         public int Stock { set; get; }
         public int Status { set; get; }
+        public int minPrice { set; get; }
+        public int maxPrice { set; get; }
 
         public static class LaptopStatus
         {

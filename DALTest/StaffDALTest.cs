@@ -46,6 +46,24 @@ namespace DALTest
             Assert.True(expected == result);
         }
 
+
+
+        // private LaptopsDAL lsdal = new LaptopsDAL();
+        // [Theory]
+        // [InlineData("asus", FOUND)]
+        // [InlineData("leno vo", FOUND)]
+        // [InlineData("", NOT_FOUND)]
+        // [InlineData("giang", NOT_FOUND)]
+        // [InlineData("UDP", NOT_FOUND)]
+        // private void SearchNameTest(string name)
+        // {
+        //     bool = lsdal.GetLaptops(LaptopFilter.FILTER_BY_LAPTOP_NAME, laptop1).
+
+        //     Laptop laptop1 = new Laptop() { Name = name };
+        //     // lsdal.GetLaptops(LaptopFilter.FILTER_BY_LAPTOP_NAME, laptop1);
+        //     Assert.True(lsdal.GetLaptops(LaptopFilter.FILTER_BY_LAPTOP_NAME, laptop1) != null);
+        // }
+
     }
 
 
