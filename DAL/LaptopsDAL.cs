@@ -14,31 +14,34 @@ namespace DAL
 
     public class LaptopsDAL
     {
+        MySqlConnection connection = DbHelper.GetConnection();
         public List<Laptop> GetLaptops(int filter, Laptop laptop)
         {
-            string query = "";
-            MySqlConnection connection = DbHelper.GetConnection();
-            // connection.Open();
-            DbHelper.OpenConnection();
-            MySqlCommand command = connection.CreateCommand();
-
-            switch (filter)
+            lock (connection)
             {
-                case LaptopFilter.GET_ALL:
-                    query = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId;";
-                    break;
-                case LaptopFilter.FILTER_BY_LAPTOP_NAME:
-                    query = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId WHERE Laptops.Name LIKE CONCAT('%',@Name,'%');";
-                    command.Parameters.AddWithValue("@Name", laptop.Name);
-                    break;
-                case LaptopFilter.FILTER_BY_LAPTOP_PRICE:
-                    query = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId WHERE Laptops.Price >= @Min AND Laptops.Price <= @Max;";
-                    command.Parameters.AddWithValue("@Min", laptop.minPrice);
-                    command.Parameters.AddWithValue("@Max", laptop.maxPrice);
-                    break;
+                string query = "";
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+
+                switch (filter)
+                {
+                    case LaptopFilter.GET_ALL:
+                        query = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId;";
+                        break;
+                    case LaptopFilter.FILTER_BY_LAPTOP_NAME:
+                        query = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId WHERE Laptops.Name LIKE CONCAT('%',@Name,'%');";
+                        command.Parameters.AddWithValue("@Name", laptop.Name);
+                        break;
+                    case LaptopFilter.FILTER_BY_LAPTOP_PRICE:
+                        query = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId WHERE Laptops.Price >= @Min AND Laptops.Price <= @Max;";
+                        command.Parameters.AddWithValue("@Min", laptop.minPrice);
+                        command.Parameters.AddWithValue("@Max", laptop.maxPrice);
+                        break;
+                }
+                command.CommandText = query;
+                return GetLaptops(command, laptop);
+
             }
-            command.CommandText = query;
-            return GetLaptops(command, laptop);
         }
 
         private List<Laptop> GetLaptops(MySqlCommand command, Laptop laptop)
@@ -48,19 +51,21 @@ namespace DAL
             try
             {
                 MySqlDataReader reader = command.ExecuteReader();
+
                 if (reader.Read())
                 {
                     do
                     {
                         LaptopList.Add(GetData(reader));
+
                     } while (reader.Read());
                 }
                 else
                 {
-                    laptop.Status = Laptop.LaptopStatus.ID_NOT_FOUND;
+                    laptop.Status = Laptop.LaptopStatus.NOT_FOUND;
                 }
                 reader.Close();
-                DbHelper.CloseConnection();
+                connection.Close();
             }
             catch (Exception ex)
             {

@@ -29,7 +29,7 @@ namespace Persistance
             public const int NOT_ACTIVE = 0;
             public const int ACTIVE = 1;
             public const int EXCEPTION = -2;
-            public const int ID_NOT_FOUND = -1;
+            public const int NOT_FOUND = -1;
 
 
         }

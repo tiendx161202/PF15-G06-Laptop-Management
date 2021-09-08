@@ -10,6 +10,7 @@ namespace ConsolePL
     {
         static void Main(string[] args)
         {
+            SearchName();
             Login();
         }
 
@@ -90,32 +91,42 @@ namespace ConsolePL
             string _name = "";
             LaptopBL lbl = new LaptopBL();
             List<Laptop> LaptopList = new List<Laptop>();
-
-            Console.Write("Input your search: ");
-            _name = Console.ReadLine();
-
-            Laptop laptop = new Laptop() { Name = _name };
-            LaptopList = lbl.GetLaptopByName(laptop);
-
-            Console.Clear();
-            Console.WriteLine("\nResult for: \"{0}\"\n", _name);
-            var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE", "STATUS");
-
-            foreach (Laptop lt in LaptopList)
+            
+            try
             {
-                Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
-                string sts;
-                if (lt.Status == Laptop.LaptopStatus.ACTIVE)
+                Console.Write("Input your search: ");
+                _name = Console.ReadLine();
+
+                Laptop laptop = new Laptop();
+
+                // if (_name != null)
+                laptop.Name = _name;
+                Console.WriteLine("{0}", laptop.Name);
+
+                LaptopList = lbl.GetLaptopByName(laptop);
+
+                Console.Clear();
+                Console.WriteLine("\nResult for: \"{0}\"\n", _name);
+                var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE", "STATUS");
+
+                foreach (Laptop lt in LaptopList)
                 {
-                    sts = "ACTIVE";
+                    Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
+                    string sts;
+                    if (lt.Status == Laptop.LaptopStatus.ACTIVE)
+                    {
+                        sts = "ACTIVE";
+                    }
+                    else
+                    {
+                        sts = "NOT ACTIVE";
+                    }
+                    table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, lt.Price.ToString(), sts);
                 }
-                else
-                {
-                    sts = "NOT ACTIVE";
-                }
-                table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, lt.Price.ToString(), sts);
+                table.Write(ConsoleTables.Format.Alternative);
             }
-            table.Write(ConsoleTables.Format.Alternative);
+            catch (Exception ex)
+            { Console.WriteLine(ex.Message); }
             Console.ReadKey();
         }
 
@@ -139,7 +150,7 @@ namespace ConsolePL
             Laptop laptop = new Laptop() { LaptopId = _LaptopId };
             laptop = lbl.GetLaptop(laptop);
 
-            if (laptop.Status == Laptop.LaptopStatus.ID_NOT_FOUND)
+            if (laptop.Status == Laptop.LaptopStatus.NOT_FOUND)
             {
                 Console.WriteLine("Not found");
             }
