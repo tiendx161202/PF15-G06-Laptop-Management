@@ -14,6 +14,85 @@ namespace ConsolePL
             Login();
         }
 
+        private static void OrderMenu()
+        {
+            LaptopBL lbl = new LaptopBL();
+            // CustomerBL cbl = new CustomerBL();
+            // OrderBL obl = new OrderBL();
+            //List<Laptop> llt;
+
+            int choice;
+            do
+            {
+                Console.WriteLine("==========================================");
+                Console.WriteLine("|         Order Management System         ");
+                Console.WriteLine("==========================================");
+                Console.WriteLine("|1.LAPTOP MANAGEMENT                      |");
+                Console.WriteLine("|2.ADD CUSTOMER                           |");
+                Console.WriteLine("|3.CREATE ORDER                           |");
+                Console.WriteLine("|4.EXIT                                   |");
+                Console.WriteLine("==========================================");
+                choice = CheckChoice(Console.ReadLine());
+                switch (choice)
+                {
+                    case 1:
+                        int choisse;
+                        Console.WriteLine("Laptop Management");
+                        Console.WriteLine("1. Get By LaptopId");
+                        Console.WriteLine("2.Get All Laptop");
+                        Console.WriteLine("3.Search By LaptopName");
+                        Console.WriteLine("4. Exit");
+                        choisse = CheckChoice(Console.ReadLine());
+                        switch (choisse)
+                        {
+                            case 1:
+                                Console.WriteLine("Input LaptopID:");
+                                int laptopId = 0;
+                                if (Int32.TryParse(Console.ReadLine(), out laptopId))
+                                {
+                                    Laptop laptop = new Laptop();
+                                    laptop = lbl.GetLaptop(laptop);
+                                    if (laptop != null)
+                                    {
+                                        Console.WriteLine("Laptop name: " + laptop.Name);
+                                        Console.WriteLine("Laptop Price:" + laptop.Price);
+                                        Console.WriteLine("Quanity: " + laptop.Stock);
+                                        Console.WriteLine("Status:" + laptop.Status);
+                                    }
+
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Your Chosse is wrong!!");
+                                }
+                                Console.WriteLine("\n    Press Enter key to back menu...");
+                                Console.ReadLine();
+                                break;
+                            case 2:
+                                //llt = lbl.GetAllLaptop(laptop);
+                                break;
+                            case 3:
+                                break;
+                            case 4:
+                                Environment.Exit(0);
+                                break;
+                        }
+
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    case 4:
+                        Environment.Exit(0);
+                        break;
+
+                }
+
+            } while (true);
+
+        }
+
         private static int IntputMaxPrice(LaptopBL lbl, int _minPrice)
         {
             int _maxPrice = 0;
@@ -92,20 +171,33 @@ namespace ConsolePL
             Laptop laptop = new Laptop() { minPrice = _minPrice, maxPrice = _maxPrice };
             LaptopList = lbl.GetLaptopByPrice(laptop);
 
-            Console.Clear();
-            Console.WriteLine("\nResult for price range Min: {0} - Max: {1}\n", laptop.minPrice, laptop.maxPrice);
+            var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+            Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
+            // Console.WriteLine("\nResult for price range Min: {0} - Max: {1}\n", laptop.minPrice, laptop.maxPrice);
             var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE");
-
+            int count = 0;
             foreach (Laptop lt in LaptopList)
             {
-                Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
-                table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, lt.Price.ToString());
+                ++count;
 
-                //Console.WriteLine(LaptopList.IndexOf(lt));
-                //DisplayLaptopInfo(lt);
             }
-            table.Write(ConsoleTables.Format.Alternative);
+            if (count == 0)
+            {
+                Console.WriteLine("Not found anything in with price range Min: {1} - Max: {2}\n", count, string.Format(info, "{0:c}", laptop.minPrice), string.Format(info, "{0:c}", laptop.maxPrice));
+            }
+            else
+            {
+                Console.Clear();
+                foreach (Laptop lt in LaptopList)
+                {
+                    table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, string.Format(info, "{0:c}", lt.Price));
+                }
+                table.Write(ConsoleTables.Format.Alternative);
+                // Console.WriteLine("\nFound {0} result for: \"{1}\"\n",count, _name);
+                Console.WriteLine("\nFound {0} result for price range Min: {1} - Max: {2}\n", count, string.Format(info, "{0:c}", laptop.minPrice), string.Format(info, "{0:c}", laptop.maxPrice));
+            }
             Console.ReadKey();
+
         }
 
         private static void ShowAll()
@@ -120,21 +212,17 @@ namespace ConsolePL
             Console.WriteLine("\nALL LAPTOP\n");
             var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE");
 
+            int count = 0;
+            Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
+            var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
             foreach (Laptop lt in LaptopList)
             {
-                Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
-                // string sts;
-                // if (lt.Status == Laptop.LaptopStatus.ACTIVE)
-                // {
-                //     sts = "ACTIVE";
-                // }
-                // else
-                // {
-                //     sts = "NOT ACTIVE";
-                // }
-                table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, lt.Price.ToString());
+                table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, string.Format(info, "{0:c}", lt.Price));
+                ++count;
             }
             table.Write(ConsoleTables.Format.Alternative);
+            Console.WriteLine("\nHas {0} result ", count);
+
             Console.ReadKey();
         }
 
@@ -145,7 +233,7 @@ namespace ConsolePL
 
             do
             {
-                Console.Write("\nName: ");
+                Console.Write("\nInput your search: ");
                 Name = Console.ReadLine();
                 lbl.ValidateName(Name, out ErrorMessage);
 
@@ -167,30 +255,40 @@ namespace ConsolePL
 
             try
             {
-                Console.Write("Input your search: ");
                 _name = InputNameSearch(lbl);
-
                 Laptop laptop = new Laptop();
-
-                // if (_name != null)
                 laptop.Name = _name;
-                Console.WriteLine("{0}", laptop.Name);
-
                 LaptopList = lbl.GetLaptopByName(laptop);
 
-                Console.Clear();
-                Console.WriteLine("\nResult for: \"{0}\"\n", _name);
+                var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
                 var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE");
+                Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
+                int count = 0;
 
                 foreach (Laptop lt in LaptopList)
                 {
-                    Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
-                    table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, lt.Price.ToString());
+                    ++count;
                 }
-                table.Write(ConsoleTables.Format.Alternative);
+                if (count == 0)
+                {
+                    Console.WriteLine("Not found anything in with \"{0}\"", _name);
+                }
+                else
+                {
+                    Console.Clear();
+                    foreach (Laptop lt in LaptopList)
+                    {
+                        table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, string.Format(info, "{0:c}", lt.Price));
+                    }
+                    table.Write(ConsoleTables.Format.Alternative);
+                    Console.WriteLine("\nFound {0} result for: \"{1}\"\n", count, _name);
+                }
+
             }
             catch (Exception ex)
-            { Console.WriteLine(ex.Message); }
+            {
+                Console.WriteLine(ex.Message);
+            }
             Console.ReadKey();
         }
 
@@ -216,17 +314,20 @@ namespace ConsolePL
 
             if (laptop.Status == Laptop.LaptopStatus.NOT_FOUND)
             {
-                Console.WriteLine("Not found");
+                Console.WriteLine("Not found with id {0}", laptop.LaptopId);
             }
             else
             {
                 DisplayLaptopInfo(laptop);
             }
+            Console.ReadKey();
 
         }
 
         private static void DisplayLaptopInfo(Laptop laptop)
         {
+            var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+
             Console.Clear();
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.WriteLine("==================================");
@@ -235,7 +336,7 @@ namespace ConsolePL
             Console.WriteLine(" ID             : " + laptop.LaptopId);
             Console.WriteLine(" Brand          : " + laptop.BrandName);
             Console.WriteLine(" Name           : " + laptop.Name);
-            Console.WriteLine(" Price          : " + laptop.Price);
+            Console.WriteLine(String.Format(info, " Price          : {0:c}", laptop.Price));
             Console.WriteLine(" CPU            : " + laptop.Cpu);
             Console.WriteLine(" RAM            : " + laptop.Ram);
             Console.WriteLine(" Hard Disk      : " + laptop.HardDisk);
@@ -246,18 +347,6 @@ namespace ConsolePL
             Console.WriteLine(" Battery        : " + laptop.Battery);
             Console.WriteLine(" Weight         : " + laptop.Weight);
             Console.WriteLine(" Warranty Period: " + laptop.WarrantyPeriod);
-
-            // string status = "";
-            // if (laptop.Status == Laptop.LaptopStatus.ACTIVE)
-            // {
-            //     status = "Active";
-            // }
-            // else if (laptop.Status == Laptop.LaptopStatus.NOT_ACTIVE)
-            // {
-            //     status = "Inactive";
-            // }
-            // Console.WriteLine(" Status         : " + status);
-            Console.ReadKey();
 
         }
 
@@ -490,84 +579,6 @@ namespace ConsolePL
                 }
             } while (key != ConsoleKey.Enter);
             return pass;
-        }
-        static void OrderMenu()
-        {
-            LaptopBL lbl = new LaptopBL();
-            CustomerBL cbl = new CustomerBL();
-            OrderBL obl = new OrderBL();
-            //List<Laptop> llt;
-
-            int choice;
-            do
-            {
-                Console.WriteLine("==========================================");
-                Console.WriteLine("|         Order Management System         ");
-                Console.WriteLine("==========================================");
-                Console.WriteLine("|1.LAPTOP MANAGEMENT                      |");
-                Console.WriteLine("|2.ADD CUSTOMER                           |");
-                Console.WriteLine("|3.CREATE ORDER                           |");
-                Console.WriteLine("|4.EXIT                                   |");
-                Console.WriteLine("==========================================");
-                choice = CheckChoice(Console.ReadLine());
-                switch (choice)
-                {
-                    case 1:
-                        int choisse;
-                        Console.WriteLine("Laptop Management");
-                        Console.WriteLine("1. Get By LaptopId");
-                        Console.WriteLine("2.Get All Laptop");
-                        Console.WriteLine("3.Search By LaptopName");
-                        Console.WriteLine("4. Exit");
-                        choisse = CheckChoice(Console.ReadLine());
-                        switch (choisse)
-                        {
-                            case 1:
-                                Console.WriteLine("Input LaptopID:");
-                                int laptopId = 0;
-                                if (Int32.TryParse(Console.ReadLine(),out laptopId))
-                                {
-                                    Laptop laptop = new Laptop() ;
-                                    laptop = lbl.GetLaptop(laptop);
-                                    if (laptop != null)
-                                    {
-                                        Console.WriteLine("Laptop name: " +laptop.Name);
-                                        Console.WriteLine("Laptop Price:" + laptop.Price);
-                                        Console.WriteLine("Quanity: " +laptop.Stock);
-                                        Console.WriteLine("Status:" + laptop.Status);
-                                    }
-                                    
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Your Chosse is wrong!!");
-                                }
-                                Console.WriteLine("\n    Press Enter key to back menu...");
-                                Console.ReadLine();
-                            break;
-                            case 2:
-                            //llt = lbl.GetAllLaptop(laptop);
-                            break ;
-                            case 3:
-                            break;
-                            case 4:
-                            Environment.Exit(0);
-                            break;
-                        }
-
-                        break;
-                    case 2:
-                        break;
-                    case 3:
-                        break;
-                    case 4:
-                        Environment.Exit(0);
-                        break;
-
-                }
-
-            } while (true);
-
         }
 
     }
