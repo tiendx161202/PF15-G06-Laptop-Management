@@ -14,6 +14,70 @@ namespace ConsolePL
             Login();
         }
 
+        private static int IntputMaxPrice(LaptopBL lbl, int _minPrice)
+        {
+            int _maxPrice = 0;
+            bool pass = true;
+            string ErrorMessage = string.Empty;
+
+            do
+            {
+                Console.Write("\nInput max price: ");
+                string sprice = Console.ReadLine();
+                if (string.IsNullOrEmpty(sprice) || string.IsNullOrWhiteSpace(sprice))
+                {
+                    Console.WriteLine(" Max price should not be empty or whitespace!");
+                    continue;
+                }
+                else
+                {
+                    _maxPrice = Convert.ToInt32(sprice);
+                }
+
+                pass = lbl.ValidateMaxPrice(_minPrice, _maxPrice, out ErrorMessage);
+
+                if (ErrorMessage != null)
+                {
+                    Console.WriteLine(ErrorMessage);
+                }
+
+            } while (!pass);
+
+            return _maxPrice;
+        }
+
+        private static int IntputMinPrice(LaptopBL lbl)
+        {
+            int _minPrice = 0;
+            bool pass = true;
+            string ErrorMessage = string.Empty;
+
+            do
+            {
+                Console.Write("\nInput min price: ");
+                string sprice = Console.ReadLine();
+                if (string.IsNullOrEmpty(sprice) || string.IsNullOrWhiteSpace(sprice))
+                {
+                    Console.WriteLine(" Min price should not be empty or whitespace!");
+                    continue;
+                }
+                else
+                {
+                    _minPrice = Convert.ToInt32(sprice);
+                }
+
+                pass = lbl.ValidateMinPrice(_minPrice, out ErrorMessage);
+
+                if (ErrorMessage != null)
+                {
+                    Console.WriteLine(ErrorMessage);
+                }
+
+            } while (!pass);
+
+            return _minPrice;
+        }
+
         private static void SearchPrice()
         {
             int _minPrice = 0;
@@ -22,32 +86,20 @@ namespace ConsolePL
             LaptopBL lbl = new LaptopBL();
             List<Laptop> LaptopList = new List<Laptop>();
 
-            Console.Write("Input min price: ");
-            _minPrice = Convert.ToInt32(Console.ReadLine());
-            Console.Write("Input max price: ");
-            _maxPrice = Convert.ToInt32(Console.ReadLine());
+            _minPrice = IntputMinPrice(lbl);
+            _maxPrice = IntputMaxPrice(lbl, _minPrice);
 
             Laptop laptop = new Laptop() { minPrice = _minPrice, maxPrice = _maxPrice };
             LaptopList = lbl.GetLaptopByPrice(laptop);
 
             Console.Clear();
             Console.WriteLine("\nResult for price range Min: {0} - Max: {1}\n", laptop.minPrice, laptop.maxPrice);
-            var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE", "STATUS");
+            var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE");
 
             foreach (Laptop lt in LaptopList)
             {
                 Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
-                string sts;
-                if (lt.Status == Laptop.LaptopStatus.ACTIVE)
-                {
-                    sts = "ACTIVE";
-                }
-                else
-                {
-                    sts = "NOT ACTIVE";
-                }
-
-                table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, lt.Price.ToString(), sts);
+                table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, lt.Price.ToString());
 
                 //Console.WriteLine(LaptopList.IndexOf(lt));
                 //DisplayLaptopInfo(lt);
@@ -66,57 +118,79 @@ namespace ConsolePL
 
             Console.Clear();
             Console.WriteLine("\nALL LAPTOP\n");
-            var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE", "STATUS");
+            var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE");
 
             foreach (Laptop lt in LaptopList)
             {
                 Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
-                string sts;
-                if (lt.Status == Laptop.LaptopStatus.ACTIVE)
-                {
-                    sts = "ACTIVE";
-                }
-                else
-                {
-                    sts = "NOT ACTIVE";
-                }
-                table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, lt.Price.ToString(), sts);
+                // string sts;
+                // if (lt.Status == Laptop.LaptopStatus.ACTIVE)
+                // {
+                //     sts = "ACTIVE";
+                // }
+                // else
+                // {
+                //     sts = "NOT ACTIVE";
+                // }
+                table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, lt.Price.ToString());
             }
             table.Write(ConsoleTables.Format.Alternative);
             Console.ReadKey();
         }
 
+        private static string InputNameSearch(LaptopBL lbl)
+        {
+            string ErrorMessage;
+            string Name;
+
+            do
+            {
+                Console.Write("\nName: ");
+                Name = Console.ReadLine();
+                lbl.ValidateName(Name, out ErrorMessage);
+
+                if (ErrorMessage != null)
+                {
+                    Console.WriteLine(ErrorMessage);
+                }
+            }
+            while (lbl.ValidateName(Name, out ErrorMessage) == false);
+
+            return Name;
+        }
+
         private static void SearchName()
         {
-            string _name = "";
+            string _name = string.Empty;
             LaptopBL lbl = new LaptopBL();
             List<Laptop> LaptopList = new List<Laptop>();
 
-            Console.Write("Input your search: ");
-            _name = Console.ReadLine();
-
-            Laptop laptop = new Laptop() { Name = _name };
-            LaptopList = lbl.GetLaptopByName(laptop);
-
-            Console.Clear();
-            Console.WriteLine("\nResult for: \"{0}\"\n", _name);
-            var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE", "STATUS");
-
-            foreach (Laptop lt in LaptopList)
+            try
             {
-                Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
-                string sts;
-                if (lt.Status == Laptop.LaptopStatus.ACTIVE)
+                Console.Write("Input your search: ");
+                _name = InputNameSearch(lbl);
+
+                Laptop laptop = new Laptop();
+
+                // if (_name != null)
+                laptop.Name = _name;
+                Console.WriteLine("{0}", laptop.Name);
+
+                LaptopList = lbl.GetLaptopByName(laptop);
+
+                Console.Clear();
+                Console.WriteLine("\nResult for: \"{0}\"\n", _name);
+                var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE");
+
+                foreach (Laptop lt in LaptopList)
                 {
-                    sts = "ACTIVE";
+                    Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
+                    table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, lt.Price.ToString());
                 }
-                else
-                {
-                    sts = "NOT ACTIVE";
-                }
-                table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, lt.Price.ToString(), sts);
+                table.Write(ConsoleTables.Format.Alternative);
             }
-            table.Write(ConsoleTables.Format.Alternative);
+            catch (Exception ex)
+            { Console.WriteLine(ex.Message); }
             Console.ReadKey();
         }
 
@@ -140,7 +214,7 @@ namespace ConsolePL
             Laptop laptop = new Laptop() { LaptopId = _LaptopId };
             laptop = lbl.GetLaptop(laptop);
 
-            if (laptop.Status == Laptop.LaptopStatus.ID_NOT_FOUND)
+            if (laptop.Status == Laptop.LaptopStatus.NOT_FOUND)
             {
                 Console.WriteLine("Not found");
             }
@@ -182,7 +256,7 @@ namespace ConsolePL
             {
                 status = "Inactive";
             }
-            Console.WriteLine(" Status         : " + status);
+            // Console.WriteLine(" Status         : " + status);
             Console.ReadKey();
 
         }

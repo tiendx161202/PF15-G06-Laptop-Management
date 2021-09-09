@@ -4,7 +4,7 @@ namespace Persistance
 {
     public class Laptop
     {
-        public int? LaptopId { set; get; }
+        public int LaptopId { set; get; }
         public int BrandId { set; get; }
         public string BrandName { set; get; }
         public string Name { set; get; }
@@ -29,7 +29,7 @@ namespace Persistance
             public const int NOT_ACTIVE = 0;
             public const int ACTIVE = 1;
             public const int EXCEPTION = -2;
-            public const int ID_NOT_FOUND = -1;
+            public const int NOT_FOUND = -1;
 
         }
         public override bool Equals(object obj)

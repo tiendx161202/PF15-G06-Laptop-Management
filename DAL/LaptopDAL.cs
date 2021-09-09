@@ -6,35 +6,36 @@ namespace DAL
 {
     public class LaptopDAL
     {
+        MySqlConnection connection = DbHelper.GetConnection();
         public Laptop GetLaptop(Laptop laptop)
         {
-            try
+            lock (connection)
             {
-                // SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId WHERE Laptops.laptopId = 3;
-
-                MySqlConnection connection = DbHelper.GetConnection();
-                connection.Open();
-                MySqlCommand command = connection.CreateCommand();
-                command.CommandText = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId WHERE Laptops.LaptopId = '" +
-                  laptop.LaptopId + "';";
-
-                MySqlDataReader reader = command.ExecuteReader();
-
-                if (reader.Read() == true)
+                try
                 {
-                    laptop = GetData(reader);
+                    connection.Open();
+                    MySqlCommand command = connection.CreateCommand();
+                    command.CommandText = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId WHERE Laptops.LaptopId = @id;";
+                    command.Parameters.AddWithValue("@id", laptop.LaptopId);
+
+                    MySqlDataReader reader = command.ExecuteReader();
+
+                    if (reader.Read() == true)
+                    {
+                        laptop = GetData(reader);
+                    }
+                    else
+                    {
+                        laptop.Status = Laptop.LaptopStatus.NOT_FOUND;
+                    }
+                    reader.Close();
+                    connection.Close();
                 }
-                else
+                catch (Exception ex)
                 {
-                    laptop.Status = Laptop.LaptopStatus.ID_NOT_FOUND;
+                    Console.WriteLine(ex.Message);
+                    laptop.Status = Laptop.LaptopStatus.EXCEPTION;
                 }
-                reader.Close();
-                connection.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                laptop.Status = Laptop.LaptopStatus.EXCEPTION;
             }
 
             return laptop;
@@ -70,10 +71,11 @@ namespace DAL
             }
             else
             {
-                laptop.Status = Laptop.LaptopStatus.ID_NOT_FOUND;
+                laptop.Status = Laptop.LaptopStatus.NOT_FOUND;
             }
 
             return laptop;
         }
+
     }
 }
