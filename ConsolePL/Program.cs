@@ -246,15 +246,15 @@ namespace ConsolePL
             Console.WriteLine(" Weight         : " + laptop.Weight);
             Console.WriteLine(" Warranty Period: " + laptop.WarrantyPeriod);
 
-            string status = "";
-            if (laptop.Status == Laptop.LaptopStatus.ACTIVE)
-            {
-                status = "Active";
-            }
-            else if (laptop.Status == Laptop.LaptopStatus.NOT_ACTIVE)
-            {
-                status = "Inactive";
-            }
+            // string status = "";
+            // if (laptop.Status == Laptop.LaptopStatus.ACTIVE)
+            // {
+            //     status = "Active";
+            // }
+            // else if (laptop.Status == Laptop.LaptopStatus.NOT_ACTIVE)
+            // {
+            //     status = "Inactive";
+            // }
             // Console.WriteLine(" Status         : " + status);
             Console.ReadKey();
 
