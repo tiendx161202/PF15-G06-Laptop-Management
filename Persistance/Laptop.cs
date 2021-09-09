@@ -4,7 +4,7 @@ namespace Persistance
 {
     public class Laptop
     {
-        public int? LaptopId { set; get; }
+        public int LaptopId { set; get; }
         public int BrandId { set; get; }
         public string BrandName { set; get; }
         public string Name { set; get; }

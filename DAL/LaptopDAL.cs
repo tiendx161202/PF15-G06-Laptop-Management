@@ -15,7 +15,6 @@ namespace DAL
                 {
                     connection.Open();
                     MySqlCommand command = connection.CreateCommand();
-
                     command.CommandText = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId WHERE Laptops.LaptopId = @id;";
                     command.Parameters.AddWithValue("@id", laptop.LaptopId);
 
