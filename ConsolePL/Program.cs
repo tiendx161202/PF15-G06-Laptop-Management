@@ -3,6 +3,7 @@ using Persistance;
 using BL;
 using System.Collections.Generic;
 using ConsoleTables;
+using DAL;
 
 namespace ConsolePL
 {
@@ -284,6 +285,7 @@ namespace ConsolePL
                         SearchMenu();
                         break;
                     case 2:
+                        OrderMenu();
                         break;
                     case 3:
                         Login();
@@ -414,6 +416,84 @@ namespace ConsolePL
                 }
             } while (key != ConsoleKey.Enter);
             return pass;
+        }
+        static void OrderMenu()
+        {
+            LaptopBL lbl = new LaptopBL();
+            CustomerBL cbl = new CustomerBL();
+            OrderBL obl = new OrderBL();
+            //List<Laptop> llt;
+
+            int choice;
+            do
+            {
+                Console.WriteLine("==========================================");
+                Console.WriteLine("|         Order Management System         ");
+                Console.WriteLine("==========================================");
+                Console.WriteLine("|1.LAPTOP MANAGEMENT                      |");
+                Console.WriteLine("|2.ADD CUSTOMER                           |");
+                Console.WriteLine("|3.CREATE ORDER                           |");
+                Console.WriteLine("|4.EXIT                                   |");
+                Console.WriteLine("==========================================");
+                choice = CheckChoice(Console.ReadLine());
+                switch (choice)
+                {
+                    case 1:
+                        int choisse;
+                        Console.WriteLine("Laptop Management");
+                        Console.WriteLine("1. Get By LaptopId");
+                        Console.WriteLine("2.Get All Laptop");
+                        Console.WriteLine("3.Search By LaptopName");
+                        Console.WriteLine("4. Exit");
+                        choisse = CheckChoice(Console.ReadLine());
+                        switch (choisse)
+                        {
+                            case 1:
+                                Console.WriteLine("Input LaptopID:");
+                                int laptopId = 0;
+                                if (Int32.TryParse(Console.ReadLine(),out laptopId))
+                                {
+                                    Laptop laptop = new Laptop() ;
+                                    laptop = lbl.GetLaptop(laptop);
+                                    if (laptop != null)
+                                    {
+                                        Console.WriteLine("Laptop name: " +laptop.Name);
+                                        Console.WriteLine("Laptop Price:" + laptop.Price);
+                                        Console.WriteLine("Quanity: " +laptop.Stock);
+                                        Console.WriteLine("Status:" + laptop.Status);
+                                    }
+                                    
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Your Chosse is wrong!!");
+                                }
+                                Console.WriteLine("\n    Press Enter key to back menu...");
+                                Console.ReadLine();
+                            break;
+                            case 2:
+                            //llt = lbl.GetAllLaptop(laptop);
+                            break ;
+                            case 3:
+                            break;
+                            case 4:
+                            Environment.Exit(0);
+                            break;
+                        }
+
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    case 4:
+                        Environment.Exit(0);
+                        break;
+
+                }
+
+            } while (true);
+
         }
 
     }
