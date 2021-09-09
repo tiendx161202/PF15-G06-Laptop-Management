@@ -8,6 +8,7 @@ namespace BL
 {
     public class LaptopBL
     {
+        
         private LaptopDAL dal = new LaptopDAL();
         private LaptopsDAL sdal = new LaptopsDAL();
 

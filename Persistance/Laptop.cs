@@ -31,7 +31,18 @@ namespace Persistance
             public const int EXCEPTION = -2;
             public const int NOT_FOUND = -1;
 
-
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj is Laptop)
+            {
+                return ((Laptop)obj).LaptopId.Equals(LaptopId);
+            }
+            return false;
+        }
+        public override int GetHashCode()
+        {
+            return LaptopId.GetHashCode();
         }
     }
 }
