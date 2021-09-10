@@ -43,7 +43,7 @@ CREATE TABLE Laptops
 	LaptopId INT NOT NULL AUTO_INCREMENT,
     BrandId int,
     Name VARCHAR(500),
-    Price INT,
+    Price DECIMAL,
     CPU VARCHAR(500),
     RAM VARCHAR(500),
     HardDisk VARCHAR(500),
@@ -104,7 +104,7 @@ INSERT INTO Brands (BrandName) VALUES ("ACER"), ("DELL"), ("MSI"), ("LENOVO"), (
 INSERT INTO Laptops (LaptopId, BrandId, Name, price, cpu, ram, harddisk, monitor, graphicscard, jack, os, battery, weight, warrantyperiod, stock)
 	VALUES (1, 1, "Asus TUF Gaming FX506LH (HN002T)", 
     21490000, "i5 10300H 2.5GHz", 
-    "8 GB, DDR4, 2 khe (1 khe 8GB + 1 khe rời) 2933 MHz", 
+    "8 GB, DDR4 2 khe (1 khe 8GB + 1 khe rời) 2933 MHz", 
     "SSD 512 GB NVMe PCIe, Hỗ trợ thêm 1 khe cắm SSD M.2 PCIe mở rộng",
     "15.6\"Full HD (1920 x 1080) 144Hz",
     "Card rời, GTX 1650 4GB",

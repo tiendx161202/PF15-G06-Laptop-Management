@@ -14,6 +14,38 @@ namespace ConsolePL
             Login();
         }
 
+        private static int DisplayLaptopList(List<Laptop> LaptopList, Laptop laptop)
+        {
+            IFormatProvider info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+            Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
+            var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE");
+
+            string FormatText(string text, int width)
+            {
+                return text.Length > width ? text.Substring(0, width - 3) + "..." : text;
+            }
+
+            int count = 0;
+            foreach (Laptop lt in LaptopList)
+            {
+                ++count;
+            }
+            if (count == 0)
+            {
+                return count;
+            }
+            else
+            {
+                Console.Clear();
+                foreach (Laptop lt in LaptopList)
+                {
+                    table.AddRow(lt.LaptopId.ToString(), FormatText(lt.Name, 30), lt.Cpu,FormatText(lt.Ram, 14), string.Format(info, "{0:c}", lt.Price));
+                }
+                table.Write(ConsoleTables.Format.Alternative);
+            }
+            return count;
+        }
+
         private static void OrderMenu()
         {
             LaptopBL lbl = new LaptopBL();
@@ -93,7 +125,7 @@ namespace ConsolePL
 
         }
 
-        private static int IntputMaxPrice(LaptopBL lbl, int _minPrice)
+        private static int IntputMaxPrice(LaptopBL lbl, decimal _minPrice)
         {
             int _maxPrice = 0;
             bool pass = true;
@@ -159,43 +191,29 @@ namespace ConsolePL
 
         private static void SearchPrice()
         {
-            int _minPrice = 0;
-            int _maxPrice = 0;
+            decimal _minPrice = 0;
+            decimal _maxPrice = 0;
+            var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
 
             LaptopBL lbl = new LaptopBL();
-            List<Laptop> LaptopList = new List<Laptop>();
 
             _minPrice = IntputMinPrice(lbl);
             _maxPrice = IntputMaxPrice(lbl, _minPrice);
 
             Laptop laptop = new Laptop() { minPrice = _minPrice, maxPrice = _maxPrice };
-            LaptopList = lbl.GetLaptopByPrice(laptop);
+            List<Laptop> LaptopList = lbl.GetLaptopByPrice(laptop);
 
-            var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
-            Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
-            // Console.WriteLine("\nResult for price range Min: {0} - Max: {1}\n", laptop.minPrice, laptop.maxPrice);
-            var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE");
-            int count = 0;
-            foreach (Laptop lt in LaptopList)
-            {
-                ++count;
+            int count = DisplayLaptopList(LaptopList, laptop);
 
-            }
             if (count == 0)
             {
                 Console.WriteLine("Not found anything in with price range Min: {1} - Max: {2}\n", count, string.Format(info, "{0:c}", laptop.minPrice), string.Format(info, "{0:c}", laptop.maxPrice));
             }
             else
             {
-                Console.Clear();
-                foreach (Laptop lt in LaptopList)
-                {
-                    table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, string.Format(info, "{0:c}", lt.Price));
-                }
-                table.Write(ConsoleTables.Format.Alternative);
-                // Console.WriteLine("\nFound {0} result for: \"{1}\"\n",count, _name);
-                Console.WriteLine("\nFound {0} result for price range Min: {1} - Max: {2}\n", count, string.Format(info, "{0:c}", laptop.minPrice), string.Format(info, "{0:c}", laptop.maxPrice));
+                Console.WriteLine("Found {0} result for price range Min: {1} - Max: {2}\n", count, string.Format(info, "{0:c}", laptop.minPrice), string.Format(info, "{0:c}", laptop.maxPrice));
             }
+
             Console.ReadKey();
 
         }
@@ -204,24 +222,22 @@ namespace ConsolePL
         {
             LaptopBL lbl = new LaptopBL();
             Laptop laptop = new Laptop() { };
-            List<Laptop> LaptopList = new List<Laptop>();
-
-            LaptopList = lbl.GetAllLaptop(laptop);
+            List<Laptop> LaptopList = lbl.GetAllLaptop(laptop);
+            // IFormatProvider info;
 
             Console.Clear();
             Console.WriteLine("\nALL LAPTOP\n");
-            var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE");
 
-            int count = 0;
-            Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
-            var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
-            foreach (Laptop lt in LaptopList)
+            int count = DisplayLaptopList(LaptopList, laptop);
+
+            if (count == 0)
             {
-                table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, string.Format(info, "{0:c}", lt.Price));
-                ++count;
+                Console.WriteLine("List laptop is empty, input laptop to your Database!");
             }
-            table.Write(ConsoleTables.Format.Alternative);
-            Console.WriteLine("\nHas {0} result ", count);
+            else
+            {
+                Console.WriteLine("Has {0} result ", count);
+            }
 
             Console.ReadKey();
         }
@@ -251,39 +267,23 @@ namespace ConsolePL
         {
             string _name = string.Empty;
             LaptopBL lbl = new LaptopBL();
-            List<Laptop> LaptopList = new List<Laptop>();
 
             try
             {
                 _name = InputNameSearch(lbl);
-                Laptop laptop = new Laptop();
-                laptop.Name = _name;
-                LaptopList = lbl.GetLaptopByName(laptop);
+                Laptop laptop = new Laptop() { Name = _name };
+                List<Laptop> LaptopList = lbl.GetLaptopByName(laptop);
 
-                var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
-                var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE");
-                Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
-                int count = 0;
+                int count = DisplayLaptopList(LaptopList, laptop);
 
-                foreach (Laptop lt in LaptopList)
-                {
-                    ++count;
-                }
                 if (count == 0)
                 {
                     Console.WriteLine("Not found anything in with \"{0}\"", _name);
                 }
                 else
                 {
-                    Console.Clear();
-                    foreach (Laptop lt in LaptopList)
-                    {
-                        table.AddRow(lt.LaptopId.ToString(), lt.Name, lt.Cpu, lt.Ram, string.Format(info, "{0:c}", lt.Price));
-                    }
-                    table.Write(ConsoleTables.Format.Alternative);
-                    Console.WriteLine("\nFound {0} result for: \"{1}\"\n", count, _name);
+                    Console.WriteLine("Has {0} result ", count);
                 }
-
             }
             catch (Exception ex)
             {
@@ -508,9 +508,14 @@ namespace ConsolePL
             StaffBL sbl = new StaffBL();
 
             Console.Clear();
-            Console.WriteLine("=======================");
-            Console.WriteLine("|        LOGIN        |");
-            Console.WriteLine("=======================");
+            // Console.WriteLine(new string('=', 36));
+            // Console.WriteLine("{0}");
+            // Console.WriteLine(new string('=', 36));
+
+            Console.WriteLine("=================================");
+            Console.WriteLine("|       LAPTOP MANAGEMENT       |");
+            Console.WriteLine("|       Login                   |");
+            Console.WriteLine("=================================");
 
             string UserName = InputUserName(sbl);
             string Password = InputPassword(sbl);

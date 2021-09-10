@@ -6,15 +6,17 @@ namespace DAL
 {
     public class StaffDAL
     {
-        MySqlConnection connection = DbHelper.GetConnection();
+        // MySqlConnection connection = DbHelper.GetConnection();
+        MySqlConnection connection = DBConfiguration.GetConnection();
+
+        
         public Staff Login(Staff staff)
         {
             lock (connection)
             {
                 try
                 {
-                    // Console.WriteLine("{0}", MD5.CreateMD5(staff.Password));
-                    connection.Open(); 
+                    connection.Open();
                     MySqlCommand command = connection.CreateCommand();
 
                     command.CommandText = "SELECT * FROM Staffs WHERE userName = @Name AND Password = @Pass;";

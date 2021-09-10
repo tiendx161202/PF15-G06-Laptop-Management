@@ -17,6 +17,5 @@ namespace Persistance
         public int FAIL_LOGIN = 0;
         public int EXCEPTION = -1;
 
-
     }
 }

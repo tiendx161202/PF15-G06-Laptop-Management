@@ -14,7 +14,7 @@ namespace DAL
 
     public class LaptopsDAL
     {
-        MySqlConnection connection = DbHelper.GetConnection();
+        MySqlConnection connection = DBConfiguration.GetConnection();
         public List<Laptop> GetLaptops(int filter, Laptop laptop)
         {
             lock (connection)
@@ -84,7 +84,7 @@ namespace DAL
             laptop.BrandId = reader.GetInt32("BrandId");
             laptop.BrandName = reader.GetString("Brandname");
             laptop.Name = reader.GetString("Name");
-            laptop.Price = reader.GetInt32("Price");
+            laptop.Price = reader.GetDecimal("Price");
             laptop.Ram = reader.GetString("RAM");
             laptop.HardDisk = reader.GetString("HardDisk");
             laptop.Cpu = reader.GetString("Cpu");

@@ -8,7 +8,7 @@ namespace Persistance
         public int BrandId { set; get; }
         public string BrandName { set; get; }
         public string Name { set; get; }
-        public int Price { set; get; }
+        public decimal Price { set; get; }
         public string Cpu { set; get; }
         public string Ram { set; get; }
         public string HardDisk { set; get; }
@@ -21,8 +21,8 @@ namespace Persistance
         public string WarrantyPeriod { set; get; }
         public int Stock { set; get; }
         public int Status { set; get; }
-        public int minPrice { set; get; }
-        public int maxPrice { set; get; }
+        public decimal minPrice { set; get; }
+        public decimal maxPrice { set; get; }
 
         public static class LaptopStatus
         {
