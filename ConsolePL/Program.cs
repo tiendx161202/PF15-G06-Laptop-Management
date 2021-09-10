@@ -11,6 +11,7 @@ namespace ConsolePL
     {
         static void Main(string[] args)
         {
+            SearchPrice();
             Login();
         }
 
@@ -39,7 +40,7 @@ namespace ConsolePL
                 Console.Clear();
                 foreach (Laptop lt in LaptopList)
                 {
-                    table.AddRow(lt.LaptopId.ToString(), FormatText(lt.Name, 30), lt.Cpu,FormatText(lt.Ram, 14), string.Format(info, "{0:c}", lt.Price));
+                    table.AddRow(lt.LaptopId.ToString(), FormatText(lt.Name, 30), lt.Cpu, FormatText(lt.Ram, 14), string.Format(info, "{0:c}", lt.Price));
                 }
                 table.Write(ConsoleTables.Format.Alternative);
             }
