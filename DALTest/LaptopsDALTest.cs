@@ -13,10 +13,13 @@ namespace DALTest
 
         [Theory]
         [InlineData("Asus", 3)]
-        [InlineData("leno vo", 0)]
-        [InlineData("gbhghgh", 0)]
-        [InlineData("1235234234", 0)]
-        [InlineData("apple", 2)]
+        [InlineData("lenovo",3)]
+        [InlineData("Acer",4)]
+        [InlineData("Dell",4)]
+        [InlineData("MSI",3)]
+        [InlineData("HP",3)]
+        [InlineData("LG",2)]
+        [InlineData("apple",3)]
         private void GetNameTest(string _name, int expected)
         {
             Laptop laptop1 = new Laptop() { Name = _name };
