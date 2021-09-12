@@ -11,8 +11,52 @@ namespace ConsolePL
     {
         static void Main(string[] args)
         {
-            SearchPrice();
+            // GetCustomer();
+            // AddCustomer();
             Login();
+        }
+
+        private static void AddCustomer()
+        {
+            CustomerBL cbl = new CustomerBL();
+            Console.Write("Name: ");
+            string _name = Console.ReadLine();
+            Console.Write("Add: ");
+            string _add = Console.ReadLine();
+            Console.Write("Phone: ");
+            string _phone = Console.ReadLine();
+
+            Customer customer = new Customer() { CustomerName = _name, CustomerAddress = _add, CustomerPhone = _phone };
+            int? id =  cbl.AddCustomer(customer);
+            customer.CustomerId = id;
+
+            Console.WriteLine("Add customer complete, id is: " + customer.CustomerId.ToString());
+            Console.ReadKey();
+
+        }
+
+        private static void GetCustomer()
+        {
+            CustomerBL cbl = new CustomerBL();
+            int id = Convert.ToInt16(Console.ReadLine());
+            Customer customer = new Customer() { CustomerId = id };
+
+            customer = cbl.GetCustomerById(customer);
+
+            if (customer == null)
+            {
+                Console.WriteLine("Not Found!");
+            }
+            else
+            {
+                Console.OutputEncoding = System.Text.Encoding.UTF8;
+                Console.WriteLine(customer.CustomerId);
+                Console.WriteLine(customer.CustomerName);
+                Console.WriteLine(customer.CustomerPhone);
+                Console.WriteLine(customer.CustomerAddress);
+            }
+            Console.ReadKey();
+
         }
 
         private static int DisplayLaptopList(List<Laptop> LaptopList, Laptop laptop)
@@ -40,7 +84,7 @@ namespace ConsolePL
                 Console.Clear();
                 foreach (Laptop lt in LaptopList)
                 {
-                    table.AddRow(lt.LaptopId.ToString(), FormatText(lt.Name, 30), lt.Cpu, FormatText(lt.Ram, 14), string.Format(info, "{0:c}", lt.Price));
+                    table.AddRow(lt.LaptopId.ToString(), FormatText(lt.Name, 30), lt.Cpu, FormatText(lt.Ram, 16), string.Format(info, "{0:c}", lt.Price));
                 }
                 table.Write(ConsoleTables.Format.Alternative);
             }
@@ -550,9 +594,7 @@ namespace ConsolePL
         private static int CheckChoice(string choice)
         {
             // catch if not a number
-
             int menuChoice = 0;
-
             try
             {
                 menuChoice = Convert.ToInt32(choice);

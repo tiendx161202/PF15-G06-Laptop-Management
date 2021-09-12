@@ -17,6 +17,7 @@ namespace DALTest
         [InlineData("gbhghgh", 0)]
         [InlineData("1235234234", 0)]
         [InlineData("apple", 2)]
+
         private void GetNameTest(string _name, int expected)
         {
             Laptop laptop1 = new Laptop() { Name = _name };

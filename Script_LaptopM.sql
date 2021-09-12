@@ -21,9 +21,9 @@ CREATE TABLE STAFFS
 CREATE TABLE Customers
 (
 	Customerid INT NOT NULL AUTO_INCREMENT,
-    Name VARCHAR(50),
+    Name VARCHAR(1000),
     Phone VARCHAR(10),
-    Address VARCHAR(100),
+    Address VARCHAR(200),
     PRIMARY KEY(Customerid)
 );
 
@@ -80,6 +80,18 @@ ALTER TABLE InvoiceDetails ADD CONSTRAINT fk_02 FOREIGN KEY (LaptopId) REFERENCE
 
 -- FK for Laptops
 ALTER TABLE LAPTOPS ADD CONSTRAINT l_fk_01 FOREIGN KEY (brandId) REFERENCES Brands(BrandId);
+
+-- Create Procedure (ADD CUSTOMER)
+delimiter $$
+create procedure sp_createCustomer(IN name varchar(100), IN Phone VARCHAR(10), IN Address varchar(200), OUT Customerid int)
+begin
+	insert into Customers(name, Phone, Address) values (Name, Phone, Address); 
+    select max(Customerid) into Customerid from Customers;
+end $$
+delimiter ;
+
+call sp_createCustomer('no name','any where', @cusId);
+select @cusId;
 
 -- Insert data to customer
 INSERT INTO Customers (customerId, Name, Phone, Address) VALUES (1, "Lê Huy Giang", "0981111111", "Thanh Hoa");
