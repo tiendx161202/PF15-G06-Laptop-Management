@@ -23,7 +23,6 @@ namespace DALTest
         [InlineData("MSI",3)]
         [InlineData("HP",3)]
         [InlineData("LG",2)]
-        [InlineData("apple",3)]
         private void GetNameTest(string _name, int expected)
         {
             Laptop laptop1 = new Laptop() { Name = _name };
