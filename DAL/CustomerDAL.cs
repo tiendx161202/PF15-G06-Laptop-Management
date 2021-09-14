@@ -94,14 +94,12 @@ namespace DAL
                     cmd.Parameters.AddWithValue("@Address", cus.CustomerAddress);
                     cmd.Parameters["@Address"].Direction = System.Data.ParameterDirection.Input;
 
-                    cmd.Parameters.AddWithValue("@customerid", MySqlDbType.Int16);
+                    cmd.Parameters.AddWithValue("@Customerid", MySqlDbType.Int32);
                     cmd.Parameters["@Customerid"].Direction = System.Data.ParameterDirection.Output;
                     cmd.ExecuteNonQuery();
 
-                    result = (int) cmd.Parameters["@customerId"].Value;
+                    result = (int) cmd.Parameters["@CustomerId"].Value;
 
-                    // Console.WriteLine(result);
-                    // Console.ReadKey();
                 }
                 catch
                 {

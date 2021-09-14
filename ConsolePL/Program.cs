@@ -3,17 +3,74 @@ using Persistance;
 using BL;
 using System.Collections.Generic;
 using ConsoleTables;
-using DAL;
 
 namespace ConsolePL
 {
     class Program
     {
+        static Staff staff = new Staff();
         static void Main(string[] args)
         {
-            // GetCustomer();
-            // AddCustomer();
             Login();
+        }
+
+        private static void CreateInvoice()
+        {
+            CustomerBL cbl = new CustomerBL();
+            LaptopBL lbl = new LaptopBL();
+            InvoiceBL ibl = new InvoiceBL();
+
+            Staff i_sale = null;
+            Staff i_acccountant = null;
+
+            if (staff.Role == staff.ROLE_SALE)
+            {
+                i_sale = staff;
+            }
+            if (staff.Role == staff.ROLE_SALE)
+            {
+                i_acccountant = staff;
+            }
+
+            Console.Write("Cus Name: ");
+            string _name = Console.ReadLine();
+            Console.Write("Cus Phone: ");
+            string _phone = Console.ReadLine();
+            Console.Write("Cus Add: ");
+            string _add = Console.ReadLine();
+
+            Customer i_customer = new Customer() { CustomerName = _name, CustomerPhone = _phone, CustomerAddress = _add };
+            i_customer.CustomerId = cbl.AddCustomer(i_customer);
+
+            // List<Laptop> i_listLaptop = new List<Laptop>();
+
+            Laptop i_laptop = new Laptop();
+            i_laptop.LaptopId = 1;
+
+            // i_listLaptop.Add(lbl.GetLaptop(i_laptop));
+
+            Invoice invoice = new Invoice() { InvoiceSale = i_sale, InvoiceAccountant = i_acccountant, InvoiceCustomer = i_customer, InvoiceDate = DateTime.Now};
+            invoice.LaptopList.Add(lbl.GetLaptop(i_laptop));
+
+            Console.WriteLine(invoice.InvoiceDate);
+
+            // int result = ibl.CreateInvoice(invoice);
+            bool result = ibl.CreateInvoice(invoice);
+
+            Console.WriteLine(result);
+
+
+            if (result)
+            {
+                Console.WriteLine("Create Complete!");
+            }
+            else
+            {
+                Console.WriteLine("Create Fail!");
+
+            }
+
+            Console.ReadKey();
         }
 
         private static void AddCustomer()
@@ -27,17 +84,17 @@ namespace ConsolePL
             string _phone = Console.ReadLine();
 
             Customer customer = new Customer() { CustomerName = _name, CustomerAddress = _add, CustomerPhone = _phone };
-            int? id =  cbl.AddCustomer(customer);
-            customer.CustomerId = id;
+            int? _id = cbl.AddCustomer(customer);
+            customer.CustomerId = _id;
 
-            Console.WriteLine("Add customer complete, id is: " + customer.CustomerId.ToString());
+            Console.WriteLine("Add customer complete, id is: {0}", _id);
             Console.ReadKey();
-
         }
 
         private static void GetCustomer()
         {
             CustomerBL cbl = new CustomerBL();
+            Console.Write("Id: ");
             int id = Convert.ToInt16(Console.ReadLine());
             Customer customer = new Customer() { CustomerId = id };
 
@@ -61,6 +118,11 @@ namespace ConsolePL
 
         private static int DisplayLaptopList(List<Laptop> LaptopList, Laptop laptop)
         {
+            if (LaptopList == null)
+            {
+                return 0;
+            }
+
             IFormatProvider info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
             Console.OutputEncoding = System.Text.Encoding.UTF8; // Display Vietnamese language
             var table = new ConsoleTable("ID", "NAME", "CPU", "RAM", "PRICE");
@@ -91,13 +153,8 @@ namespace ConsolePL
             return count;
         }
 
-        private static void OrderMenu()
+        private static void InvoiceMenu()
         {
-            LaptopBL lbl = new LaptopBL();
-            // CustomerBL cbl = new CustomerBL();
-            // OrderBL obl = new OrderBL();
-            //List<Laptop> llt;
-
             int choice;
             do
             {
@@ -110,48 +167,27 @@ namespace ConsolePL
                 Console.WriteLine("|4.EXIT                                   |");
                 Console.WriteLine("==========================================");
                 choice = CheckChoice(Console.ReadLine());
+
                 switch (choice)
                 {
                     case 1:
                         int choisse;
                         Console.WriteLine("Laptop Management");
                         Console.WriteLine("1. Get By LaptopId");
-                        Console.WriteLine("2.Get All Laptop");
-                        Console.WriteLine("3.Search By LaptopName");
+                        Console.WriteLine("2. Get All Laptop");
+                        Console.WriteLine("3. Search By LaptopName");
                         Console.WriteLine("4. Exit");
                         choisse = CheckChoice(Console.ReadLine());
                         switch (choisse)
                         {
                             case 1:
-                                Console.WriteLine("Input LaptopID:");
-                                int laptopId = 0;
-                                if (Int32.TryParse(Console.ReadLine(), out laptopId))
-                                {
-                                    Laptop laptop = new Laptop();
-                                    laptop = lbl.GetLaptop(laptop);
-                                    if (laptop != null)
-                                    {
-                                        Console.WriteLine("Laptop name: " + laptop.Name);
-                                        Console.WriteLine("Laptop Price:" + laptop.Price);
-                                        Console.WriteLine("Quanity: " + laptop.Stock);
-                                        Console.WriteLine("Status:" + laptop.Status);
-                                    }
-
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Your Chosse is wrong!!");
-                                }
-                                Console.WriteLine("\n    Press Enter key to back menu...");
-                                Console.ReadLine();
                                 break;
                             case 2:
-                                //llt = lbl.GetAllLaptop(laptop);
                                 break;
                             case 3:
                                 break;
                             case 4:
-                                Environment.Exit(0);
+                                SaleMenu();
                                 break;
                         }
 
@@ -159,6 +195,7 @@ namespace ConsolePL
                     case 2:
                         break;
                     case 3:
+                        CreateInvoice();
                         break;
                     case 4:
                         Environment.Exit(0);
@@ -252,11 +289,12 @@ namespace ConsolePL
 
             if (count == 0)
             {
-                Console.WriteLine("Not found anything in with price range Min: {1} - Max: {2}\n", count, string.Format(info, "{0:c}", laptop.minPrice), string.Format(info, "{0:c}", laptop.maxPrice));
+                laptop = null;
+                Console.WriteLine("Not found anything in with price range Min: {0} - Max: {1}\n", string.Format(info, "{0:c}", _minPrice), string.Format(info, "{0:c}", _maxPrice));
             }
             else
             {
-                Console.WriteLine("Found {0} result for price range Min: {1} - Max: {2}\n", count, string.Format(info, "{0:c}", laptop.minPrice), string.Format(info, "{0:c}", laptop.maxPrice));
+                Console.WriteLine("Found {0} result for price range Min: {1} - Max: {2}\n", count, string.Format(info, "{0:c}", _minPrice), string.Format(info, "{0:c}", _maxPrice));
             }
 
             Console.ReadKey();
@@ -323,6 +361,7 @@ namespace ConsolePL
 
                 if (count == 0)
                 {
+                    laptop = null;
                     Console.WriteLine("Not found anything in with \"{0}\"", _name);
                 }
                 else
@@ -357,9 +396,9 @@ namespace ConsolePL
             Laptop laptop = new Laptop() { LaptopId = _LaptopId };
             laptop = lbl.GetLaptop(laptop);
 
-            if (laptop.Status == Laptop.LaptopStatus.NOT_FOUND)
+            if (laptop == null)
             {
-                Console.WriteLine("Not found with id {0}", laptop.LaptopId);
+                Console.WriteLine("Not found with id {0}", _LaptopId);
             }
             else
             {
@@ -493,7 +532,7 @@ namespace ConsolePL
                         SearchMenu();
                         break;
                     case 2:
-                        OrderMenu();
+                        InvoiceMenu();
                         break;
                     case 3:
                         Login();
@@ -562,13 +601,13 @@ namespace ConsolePL
             Console.WriteLine("|       Login                   |");
             Console.WriteLine("=================================");
 
-            string UserName = InputUserName(sbl);
-            string Password = InputPassword(sbl);
+            string _UserName = InputUserName(sbl);
+            string _Password = InputPassword(sbl);
 
-            Staff staff = new Staff() { UserName = UserName, Password = Password };
+            staff.UserName = _UserName; staff.Password = _Password;
             staff = sbl.Login(staff);
 
-            if (staff.Role == staff.FAIL_LOGIN)
+            if (staff == null)
             {
                 Console.WriteLine("User Name or Password is wrong!\nPress EnterKey to re-login or any key to Exit!");
                 var key = Console.ReadKey();

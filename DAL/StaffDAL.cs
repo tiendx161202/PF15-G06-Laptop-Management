@@ -6,9 +6,7 @@ namespace DAL
 {
     public class StaffDAL
     {
-        // MySqlConnection connection = DbHelper.GetConnection();
         MySqlConnection connection = DBConfiguration.GetConnection();
-
         
         public Staff Login(Staff staff)
         {
@@ -35,15 +33,19 @@ namespace DAL
                     }
                     else
                     {
-                        staff.Role = staff.FAIL_LOGIN;
+                        staff = null;
                     }
                     reader.Close();
-                    connection.Close();
                 }
-                catch (Exception ex)
+                catch
                 {
-                    Console.WriteLine(ex.Message);
-                    staff.Role = staff.EXCEPTION;
+                    // Console.WriteLine(ex.Message);
+                    // staff.Role = staff.EXCEPTION;
+                    staff = null;
+                }
+                finally
+                {
+                    connection.Close();
                 }
             }
             return staff;

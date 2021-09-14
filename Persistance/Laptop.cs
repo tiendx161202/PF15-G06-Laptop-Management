@@ -4,7 +4,7 @@ namespace Persistance
 {
     public class Laptop
     {
-        public int LaptopId { set; get; }
+        public int? LaptopId { set; get; }
         public int BrandId { set; get; }
         public string BrandName { set; get; }
         public string Name { set; get; }
@@ -23,6 +23,12 @@ namespace Persistance
         public int Status { set; get; }
         public decimal minPrice { set; get; }
         public decimal maxPrice { set; get; }
+        public int Quanity {set; get;}
+
+        public Laptop()
+        {
+            Quanity = 1;
+        }
 
         public static class LaptopStatus
         {

@@ -62,16 +62,21 @@ namespace DAL
                 }
                 else
                 {
-                    laptop.Status = Laptop.LaptopStatus.NOT_FOUND;
+                    laptop = null;
+                    LaptopList = null;
                 }
                 reader.Close();
-                connection.Close();
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex.Message);
-                Console.ReadKey();
-                laptop.Status = Laptop.LaptopStatus.EXCEPTION;
+                laptop = null;
+                // Console.WriteLine(ex.Message);
+                // Console.ReadKey();
+                // laptop.Status = Laptop.LaptopStatus.EXCEPTION;
+            }
+            finally
+            {
+                connection.Close();
             }
 
             return LaptopList;

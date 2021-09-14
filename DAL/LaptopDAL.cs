@@ -7,7 +7,7 @@ namespace DAL
     public class LaptopDAL
     {
         MySqlConnection connection = DBConfiguration.GetConnection();
-        
+
         public Laptop GetLaptop(Laptop laptop)
         {
             lock (connection)
@@ -27,15 +27,20 @@ namespace DAL
                     }
                     else
                     {
-                        laptop.Status = Laptop.LaptopStatus.NOT_FOUND;
+                        // laptop.Status = Laptop.LaptopStatus.NOT_FOUND;
+                        laptop = null;
                     }
                     reader.Close();
-                    connection.Close();
                 }
-                catch (Exception ex)
+                catch
                 {
-                    Console.WriteLine(ex.Message);
-                    laptop.Status = Laptop.LaptopStatus.EXCEPTION;
+                    laptop = null;
+                    // Console.WriteLine(ex.Message);
+                    // laptop.Status = Laptop.LaptopStatus.EXCEPTION;
+                }
+                finally
+                {
+                    connection.Close();
                 }
             }
 

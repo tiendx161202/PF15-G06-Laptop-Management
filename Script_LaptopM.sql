@@ -86,12 +86,15 @@ delimiter $$
 create procedure sp_createCustomer(IN name varchar(100), IN Phone VARCHAR(10), IN Address varchar(200), OUT Customerid int)
 begin
 	insert into Customers(name, Phone, Address) values (Name, Phone, Address); 
-    select max(Customerid) into Customerid from Customers;
+    select max(customerId) into customerId from Customers;
+    
+--    SELECT Customerid FROM Customers WHERE Customerid = max(Customerid);
 end $$
 delimiter ;
 
-call sp_createCustomer('no name','any where', @cusId);
-select @cusId;
+-- call sp_createCustomer('no name','any thing' ,'any where', @cusId);
+-- select @cusId;
+-- select *from Customers;
 
 -- Insert data to customer
 INSERT INTO Customers (customerId, Name, Phone, Address) VALUES (1, "Lê Huy Giang", "0981111111", "Thanh Hoa");
@@ -429,7 +432,7 @@ INSERT INTO Laptops (BrandId, Name, price, cpu, ram, harddisk, monitor, graphics
 "12 tháng ",
 4
 ),
-(8,"MacBook Pro M1 2020 (MYDC2SA/A) ",
+(8,"Apple MacBook Pro M1 2020 (MYDC2SA/A) ",
 35990000,"Apple M1",
 "8 GB",
 "SSD 512 GB",

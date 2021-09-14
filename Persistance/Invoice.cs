@@ -10,21 +10,27 @@ namespace Persistance
 
     public class Invoice
     {
-        public int InvoiceId { set; get; }
+        public int InvoiceNo { set; get; }
         public DateTime InvoiceDate { set; get; }
         public Customer InvoiceCustomer { set; get; }
+        public Staff InvoiceSale { set; get; }
+        public Staff InvoiceAccountant { set; get; }
         public int Status { set; get; }
         public List<Laptop> LaptopList { set; get; }
         public Laptop this[int index]
         {
             get
             {
-                if (LaptopList == null || LaptopList.Count == 0 || index < 0 || LaptopList.Count < index) return null;
+                if (LaptopList == null || LaptopList.Count == 0 || index < 0 || LaptopList.Count < index)
+                    return null;
+
                 return LaptopList[index];
             }
             set
             {
-                if (LaptopList == null) LaptopList = new List<Laptop>();
+                if (LaptopList == null)
+                    LaptopList = new List<Laptop>();
+
                 LaptopList.Add(value);
             }
         }
@@ -38,14 +44,14 @@ namespace Persistance
         {
             if (obj is Invoice)
             {
-                return ((Invoice)obj).InvoiceId.Equals(InvoiceId);
+                return ((Invoice)obj).InvoiceNo.Equals(InvoiceNo);
             }
             return false;
         }
 
         public override int GetHashCode()
         {
-            return InvoiceId.GetHashCode();
+            return InvoiceNo.GetHashCode();
         }
 
     }
