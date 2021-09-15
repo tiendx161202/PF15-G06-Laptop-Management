@@ -21,7 +21,7 @@ CREATE TABLE STAFFS
 CREATE TABLE Customers
 (
 	Customerid INT NOT NULL AUTO_INCREMENT,
-    Name VARCHAR(1000),
+    Name VARCHAR(100),
     Phone VARCHAR(10),
     Address VARCHAR(200),
     PRIMARY KEY(Customerid)
@@ -78,22 +78,31 @@ CREATE TABLE InvoiceDetails
 ALTER TABLE InvoiceDetails ADD CONSTRAINT fk_01 FOREIGN KEY (InvoiceNo) REFERENCES invoices(InvoiceNo);
 ALTER TABLE InvoiceDetails ADD CONSTRAINT fk_02 FOREIGN KEY (LaptopId) REFERENCES Laptops(LaptopId);
 
+-- Create Procedure (ADD INVOICE)
+delimiter $$
+create procedure p_createInvoice(IN SaleId INT, IN CustomerId INT, IN Datetime DATETIME, IN Status INT, OUT InvoiceNo int)
+begin
+	INSERT INTO Invoices (saleId, customerid, datetime, status) VALUES (saleId, customerid, Datetime, status);
+	set InvoiceNo := last_insert_id();
+end $$
+delimiter ;
+
 -- FK for Laptops
 ALTER TABLE LAPTOPS ADD CONSTRAINT l_fk_01 FOREIGN KEY (brandId) REFERENCES Brands(BrandId);
 
 -- Create Procedure (ADD CUSTOMER)
 delimiter $$
-create procedure sp_createCustomer(IN name varchar(100), IN Phone VARCHAR(10), IN Address varchar(200), OUT Customerid int)
+create procedure p_createCustomer(IN name varchar(100), IN Phone VARCHAR(10), IN Address varchar(200), OUT Customerid int)
 begin
 	insert into Customers(name, Phone, Address) values (Name, Phone, Address); 
-    select max(customerId) into customerId from Customers;
-    
---    SELECT Customerid FROM Customers WHERE Customerid = max(Customerid);
+-- 	select max(Customerid) from Customers;
+    set Customerid := last_insert_id();
 end $$
 delimiter ;
 
--- call sp_createCustomer('no name','any thing' ,'any where', @cusId);
--- select @cusId;
+-- CALL sp_createCustomer('no name','any thing' ,'any where', @Customerid);
+-- SELECT @Customerid; 
+
 -- select *from Customers;
 
 -- Insert data to customer

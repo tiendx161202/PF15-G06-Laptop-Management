@@ -3,6 +3,7 @@ using Persistance;
 using BL;
 using System.Collections.Generic;
 using ConsoleTables;
+using System.Linq;
 
 namespace ConsolePL
 {
@@ -11,10 +12,86 @@ namespace ConsolePL
         static Staff staff = new Staff();
         static void Main(string[] args)
         {
+            ShowAll();
             Login();
         }
 
-        private static void CreateInvoice()
+        private static void ChoiceAfterShowList(List<Laptop> Pglist)
+        {
+            int idChoice;
+            bool ans = false;
+
+            do
+            {
+                Console.Write("Input ID Laptop to show details: ");
+                idChoice = CheckChoice(Console.ReadLine());
+
+                if (idChoice == 0)
+                {
+                    Console.WriteLine("Error ID, re input ...");
+                }
+                else if (idChoice != 0)
+                {
+                    foreach (var lap in Pglist)
+                    {
+                        if (lap.LaptopId == idChoice)
+                        {
+                            ans = true;
+                            break;
+                        }
+                        else
+                        {
+                            ans = false;
+                        }
+                    }
+
+                    if (ans)
+                    {
+                        Laptop lt = new Laptop() { LaptopId = idChoice };
+                        int index = Pglist.IndexOf(lt);
+                        DisplayLaptopInfo(Pglist[index]);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error not exists in page, re input ...");
+                    }
+                }
+            } while (idChoice == 0);
+
+
+        }
+
+        private static void GotoPage(List<Laptop> LaptopList, Laptop laptop, string resString)
+        {
+            int page = 1;
+            int count = LaptopList.Count;
+            double resPage = count % 10 > 0 ? count / 10 + 1 : count / 10;
+
+            List<Laptop> Pglist = null;
+
+            if (resPage == 1)
+            {
+                Pglist = DisplayLaptopList(LaptopList, laptop, page, resString);
+                Console.WriteLine(" PAGE {0}", page);
+            }
+            else if (resPage > 1)
+            {
+                do
+                {
+                    Pglist = DisplayLaptopList(LaptopList, laptop, page, resString);
+                    Console.WriteLine(" PAGE {0}", page);
+                    do
+                    {
+                        Console.Write("Input 0 to exit next page or your page choice: ");
+                        page = CheckChoice(Console.ReadLine());
+                    } while (page > resPage || page < 0);
+                } while (page != 0);
+
+            }
+            ChoiceAfterShowList(Pglist);
+        }
+
+        private static void CreateNewInvoice()
         {
             CustomerBL cbl = new CustomerBL();
             LaptopBL lbl = new LaptopBL();
@@ -42,33 +119,31 @@ namespace ConsolePL
             Customer i_customer = new Customer() { CustomerName = _name, CustomerPhone = _phone, CustomerAddress = _add };
             i_customer.CustomerId = cbl.AddCustomer(i_customer);
 
-            // List<Laptop> i_listLaptop = new List<Laptop>();
+            Invoice invoice = new Invoice() { InvoiceSale = i_sale, InvoiceAccountant = i_acccountant, InvoiceCustomer = i_customer, InvoiceDate = DateTime.Now };
 
-            Laptop i_laptop = new Laptop();
-            i_laptop.LaptopId = 1;
+            // for (int i = 1; i < 23; ++i)
+            // {
 
-            // i_listLaptop.Add(lbl.GetLaptop(i_laptop));
+            Laptop i_laptop = new Laptop() { LaptopId = 25 };
+            i_laptop = lbl.GetLaptop(i_laptop);
+            i_laptop.Quanity = 2;
+            invoice.LaptopList.Add(i_laptop);
 
-            Invoice invoice = new Invoice() { InvoiceSale = i_sale, InvoiceAccountant = i_acccountant, InvoiceCustomer = i_customer, InvoiceDate = DateTime.Now};
-            invoice.LaptopList.Add(lbl.GetLaptop(i_laptop));
-
-            Console.WriteLine(invoice.InvoiceDate);
-
-            // int result = ibl.CreateInvoice(invoice);
-            bool result = ibl.CreateInvoice(invoice);
-
-            Console.WriteLine(result);
-
+            // }
+            Invoice invoice1;
+            bool result = ibl.CreateInvoice(invoice, out invoice1);
 
             if (result)
             {
-                Console.WriteLine("Create Complete!");
+                Console.WriteLine("Create Complete! Your Invoice No. is " + invoice1.InvoiceNo);
             }
             else
             {
                 Console.WriteLine("Create Fail!");
-
             }
+
+            // Console.WriteLine(invoice1.InvoiceCustomer.CustomerName);
+            // Console.WriteLine(invoice1.InvoiceSale.Name);
 
             Console.ReadKey();
         }
@@ -116,11 +191,19 @@ namespace ConsolePL
 
         }
 
-        private static int DisplayLaptopList(List<Laptop> LaptopList, Laptop laptop)
+
+        private static List<Laptop> DisplayLaptopList(List<Laptop> LaptopList, Laptop laptop, int pageNum, string resString)
         {
+            List<Laptop> PgLst = null;
+
             if (LaptopList == null)
             {
-                return 0;
+                return null;
+            }
+
+            List<Laptop> GetPage(List<Laptop> PageList, int pageNum, int PageSize = 10)
+            {
+                return PageList.Skip(pageNum * PageSize).Take(PageSize).ToList();
             }
 
             IFormatProvider info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
@@ -132,25 +215,25 @@ namespace ConsolePL
                 return text.Length > width ? text.Substring(0, width - 3) + "..." : text;
             }
 
-            int count = 0;
-            foreach (Laptop lt in LaptopList)
-            {
-                ++count;
-            }
+            int count = LaptopList.Count;
             if (count == 0)
             {
-                return count;
+                return null;
             }
             else
             {
                 Console.Clear();
-                foreach (Laptop lt in LaptopList)
+                PgLst = GetPage(LaptopList, pageNum - 1);
+                foreach (Laptop lt in PgLst)
                 {
                     table.AddRow(lt.LaptopId.ToString(), FormatText(lt.Name, 30), lt.Cpu, FormatText(lt.Ram, 16), string.Format(info, "{0:c}", lt.Price));
                 }
+
+                double resPage = count % 10 > 0 ? count / 10 + 1 : count / 10;
+                Console.WriteLine("Has {0} page with {1} result " + resString, resPage, count);
                 table.Write(ConsoleTables.Format.Alternative);
             }
-            return count;
+            return PgLst;
         }
 
         private static void InvoiceMenu()
@@ -158,14 +241,16 @@ namespace ConsolePL
             int choice;
             do
             {
+                Console.Clear();
                 Console.WriteLine("==========================================");
-                Console.WriteLine("|         Order Management System         ");
+                Console.WriteLine("|        Invoice Management System        |");
                 Console.WriteLine("==========================================");
-                Console.WriteLine("|1.LAPTOP MANAGEMENT                      |");
-                Console.WriteLine("|2.ADD CUSTOMER                           |");
-                Console.WriteLine("|3.CREATE ORDER                           |");
-                Console.WriteLine("|4.EXIT                                   |");
+                Console.WriteLine("|1. LAPTOP MANAGEMENT                     |");
+                Console.WriteLine("|2. ADD CUSTOMER                          |");
+                Console.WriteLine("|3. CREATE NEW INVOICE                    |");
+                Console.WriteLine("|4. Back to \"Sale Menu\"                   |");
                 Console.WriteLine("==========================================");
+                Console.Write(" # YOUR CHOICE: ");
                 choice = CheckChoice(Console.ReadLine());
 
                 switch (choice)
@@ -189,20 +274,29 @@ namespace ConsolePL
                             case 4:
                                 SaleMenu();
                                 break;
+                            default:
+                                Console.WriteLine("Invalid! Please input 1 - 4");
+                                Console.WriteLine("Press any key to continue...");
+                                Console.ReadLine();
+                                break;
                         }
 
                         break;
                     case 2:
+                        AddCustomer();
                         break;
                     case 3:
-                        CreateInvoice();
+                        CreateNewInvoice();
                         break;
                     case 4:
-                        Environment.Exit(0);
+                        SaleMenu();
                         break;
-
+                    default:
+                        Console.WriteLine("Invalid! Please input 1 - 4");
+                        Console.WriteLine("Press any key to continue...");
+                        Console.ReadLine();
+                        break;
                 }
-
             } while (true);
 
         }
@@ -285,7 +379,7 @@ namespace ConsolePL
             Laptop laptop = new Laptop() { minPrice = _minPrice, maxPrice = _maxPrice };
             List<Laptop> LaptopList = lbl.GetLaptopByPrice(laptop);
 
-            int count = DisplayLaptopList(LaptopList, laptop);
+            int count = LaptopList.Count;
 
             if (count == 0)
             {
@@ -294,7 +388,11 @@ namespace ConsolePL
             }
             else
             {
-                Console.WriteLine("Found {0} result for price range Min: {1} - Max: {2}\n", count, string.Format(info, "{0:c}", _minPrice), string.Format(info, "{0:c}", _maxPrice));
+                // int pageNum = 0;
+                string resString = "for price range Min: " + _minPrice + " - Max: " + _maxPrice + " !";
+                // Console.WriteLine("Found {0} result for price range Min: {1} - Max: {2}\n", count, string.Format(info, "{0:c}", _minPrice), string.Format(info, "{0:c}", _maxPrice));
+                // DisplayLaptopList(LaptopList, laptop, pageNum, resString);
+                GotoPage(LaptopList, laptop, resString);
             }
 
             Console.ReadKey();
@@ -311,15 +409,15 @@ namespace ConsolePL
             Console.Clear();
             Console.WriteLine("\nALL LAPTOP\n");
 
-            int count = DisplayLaptopList(LaptopList, laptop);
-
+            int count = LaptopList.Count;
             if (count == 0)
             {
                 Console.WriteLine("List laptop is empty, input laptop to your Database!");
             }
             else
             {
-                Console.WriteLine("Has {0} result ", count);
+                string resString = @"for all laptop!";
+                GotoPage(LaptopList, laptop, resString);
             }
 
             Console.ReadKey();
@@ -357,7 +455,8 @@ namespace ConsolePL
                 Laptop laptop = new Laptop() { Name = _name };
                 List<Laptop> LaptopList = lbl.GetLaptopByName(laptop);
 
-                int count = DisplayLaptopList(LaptopList, laptop);
+                int count = LaptopList.Count;
+
 
                 if (count == 0)
                 {
@@ -366,7 +465,8 @@ namespace ConsolePL
                 }
                 else
                 {
-                    Console.WriteLine("Has {0} result ", count);
+                    string resString = "for \"" + _name + "\" !";
+                    GotoPage(LaptopList, laptop, resString);
                 }
             }
             catch (Exception ex)
@@ -515,12 +615,12 @@ namespace ConsolePL
             {
                 Console.Clear();
                 Console.WriteLine("==================================");
-                Console.WriteLine("|          LAPTOP SHOP T&G       |");
-                Console.WriteLine("|            Sale Menu           |");
+                Console.WriteLine("|         LAPTOP SHOP T&G        |");
+                Console.WriteLine("|           Sale Menu            |");
                 Console.WriteLine("==================================");
-                Console.WriteLine("1. SEARCH LAPTOP ");
-                Console.WriteLine("2. CREATE ORDER");
-                Console.WriteLine("3. LOGOUT");
+                Console.WriteLine("|1. SEARCH LAPTOP                |");
+                Console.WriteLine("|2. CREATE ORDER                 |");
+                Console.WriteLine("|3. LOGOUT                       |");
                 Console.WriteLine("==================================");
                 Console.Write("# YOUR CHOICE: ");
 
@@ -535,6 +635,7 @@ namespace ConsolePL
                         InvoiceMenu();
                         break;
                     case 3:
+                        staff = null;
                         Login();
                         break;
                     default:
@@ -619,6 +720,7 @@ namespace ConsolePL
             }
             else
             {
+                staff.UserName = null; staff.Password = null;
                 if (staff.Role == staff.ROLE_SALE)
                 {
                     SaleMenu();

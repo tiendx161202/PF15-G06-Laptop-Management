@@ -20,20 +20,23 @@ namespace DAL
             lock (connection)
             {
                 string query = "";
-                connection.Open();
+                if (connection.State == System.Data.ConnectionState.Closed)
+                {
+                    connection.Open();
+                }
                 MySqlCommand command = connection.CreateCommand();
 
                 switch (filter)
                 {
                     case LaptopFilter.GET_ALL:
-                        query = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId;";
+                        query = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId ORDER BY Laptopid;";
                         break;
                     case LaptopFilter.FILTER_BY_LAPTOP_NAME:
-                        query = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId WHERE Laptops.Name LIKE CONCAT('%',@Name,'%');";
+                        query = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId WHERE Laptops.Name LIKE CONCAT('%',@Name,'%') ORDER BY Laptopid;";
                         command.Parameters.AddWithValue("@Name", laptop.Name);
                         break;
                     case LaptopFilter.FILTER_BY_LAPTOP_PRICE:
-                        query = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId WHERE Laptops.Price >= @Min AND Laptops.Price <= @Max;";
+                        query = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId WHERE Laptops.Price >= @Min AND Laptops.Price <= @Max ORDER BY Laptopid;";
                         command.Parameters.AddWithValue("@Min", laptop.minPrice);
                         command.Parameters.AddWithValue("@Max", laptop.maxPrice);
                         break;

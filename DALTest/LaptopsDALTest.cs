@@ -16,26 +16,31 @@ namespace DALTest
         [InlineData("gbhghgh", 0)]
         [InlineData("1235234234", 0)]
         [InlineData("apple", 3)]
-        [InlineData("lenovo",3)]
-        [InlineData("Acer",4)]
-        [InlineData("Dell",4)]
-        [InlineData("MSI",3)]
-        [InlineData("HP",3)]
-        [InlineData("LG",2)]
-        [InlineData(" ",25)]
-
+        [InlineData("lenovo", 3)]
+        [InlineData("Acer", 4)]
+        [InlineData("Dell", 4)]
+        [InlineData("MSI", 3)]
+        [InlineData("HP", 3)]
+        [InlineData("LG", 2)]
+        [InlineData(" ", 25)]
         private void GetNameTest(string _name, int expected)
         {
             Laptop laptop1 = new Laptop() { Name = _name };
             List<Laptop> list = lsdal.GetLaptops(LaptopFilter.FILTER_BY_LAPTOP_NAME, laptop1);
 
             int match = 0;
-
-            foreach (Laptop lt in list)
+            if (list == null)
             {
-                if (lt.Name.Contains(_name, comparisonType: StringComparison.CurrentCultureIgnoreCase))
+                match = 0;
+            }
+            else
+            {
+                foreach (Laptop lt in list)
                 {
-                    ++match;
+                    if (lt.Name.Contains(_name, comparisonType: StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        match++;
+                    }
                 }
             }
             Assert.True(match == expected);
@@ -55,15 +60,21 @@ namespace DALTest
             List<Laptop> list = lsdal.GetLaptops(LaptopFilter.FILTER_BY_LAPTOP_PRICE, laptop1);
             int match = 0;
 
-            foreach (Laptop lt in list)
+            if (list == null)
             {
-                if (_min <= lt.Price && lt.Price <= _max)
+                match = 0;
+            }
+            else
+            {
+                foreach (Laptop lt in list)
                 {
-                    ++match;
+                    if (_min <= lt.Price && lt.Price <= _max)
+                    {
+                        ++match;
+                    }
                 }
             }
             Assert.True(match == expected);
-
         }
 
     }

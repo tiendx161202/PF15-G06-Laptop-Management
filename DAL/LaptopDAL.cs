@@ -14,9 +14,13 @@ namespace DAL
             {
                 try
                 {
-                    connection.Open();
+                    if (connection.State == System.Data.ConnectionState.Closed)
+                    {
+                        connection.Open();
+                    }
                     MySqlCommand command = connection.CreateCommand();
                     command.CommandText = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId WHERE Laptops.LaptopId = @id;";
+                    // command.Parameters.Clear();
                     command.Parameters.AddWithValue("@id", laptop.LaptopId);
 
                     MySqlDataReader reader = command.ExecuteReader();
@@ -66,6 +70,7 @@ namespace DAL
             laptop.Weight = reader.GetString("Weight");
             laptop.WarrantyPeriod = reader.GetString("WarrantyPeriod");
             laptop.Stock = reader.GetInt32("Stock");
+            laptop.Quanity = null;
 
             if (laptop.Stock > 0)
             {

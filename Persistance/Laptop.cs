@@ -23,11 +23,25 @@ namespace Persistance
         public int Status { set; get; }
         public decimal minPrice { set; get; }
         public decimal maxPrice { set; get; }
-        public int Quanity {set; get;}
+        private int? quanity;
+
+        public int? Quanity
+        {
+            set
+            {
+                if (this.quanity < 0)
+                    throw new Exception ("Quanity is invalid");
+
+                this.quanity = value ?? 1;
+            }
+            get
+            {
+                return this.quanity;
+            }
+        }
 
         public Laptop()
         {
-            Quanity = 1;
         }
 
         public static class LaptopStatus

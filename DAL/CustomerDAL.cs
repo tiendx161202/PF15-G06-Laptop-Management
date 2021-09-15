@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 using Persistance;
 
@@ -44,23 +43,6 @@ namespace DAL
             }
         }
 
-        // internal Customer GetCustomerById(int customerId, MySqlConnection connection)
-        // {
-        //     MySqlCommand command = new MySqlCommand();
-
-        //     query = @"select customer_id, customer_name,
-        //                 ifnull(customer_address, '') as customer_address
-        //                 from Customers where customer_id=" + customerId + ";";
-        //     Customer cus = null;
-        //     reader = (new MySqlCommand(query, connection)).ExecuteReader();
-        //     if (reader.Read())
-        //     {
-        //         cus = GetCustomer(reader);
-        //     }
-        //     reader.Close();
-        //     return cus;
-        // }
-
         private Customer GetCustomer(MySqlDataReader reader)
         {
             Customer cus = new Customer();
@@ -80,7 +62,8 @@ namespace DAL
                 {
                     connection.Open();
                 }
-                MySqlCommand cmd = new MySqlCommand("sp_createCustomer", connection);
+                MySqlCommand cmd = new MySqlCommand("p_createCustomer", connection);
+
                 try
                 {
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -98,7 +81,7 @@ namespace DAL
                     cmd.Parameters["@Customerid"].Direction = System.Data.ParameterDirection.Output;
                     cmd.ExecuteNonQuery();
 
-                    result = (int) cmd.Parameters["@CustomerId"].Value;
+                    result = (int)cmd.Parameters["@CustomerId"].Value;
 
                 }
                 catch

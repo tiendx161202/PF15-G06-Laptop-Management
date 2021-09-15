@@ -7,14 +7,17 @@ namespace DAL
     public class StaffDAL
     {
         MySqlConnection connection = DBConfiguration.GetConnection();
-        
+
         public Staff Login(Staff staff)
         {
             lock (connection)
             {
                 try
                 {
-                    connection.Open();
+                    if (connection.State == System.Data.ConnectionState.Closed)
+                    {
+                        connection.Open();
+                    }
                     MySqlCommand command = connection.CreateCommand();
 
                     command.CommandText = "SELECT * FROM Staffs WHERE userName = @Name AND Password = @Pass;";

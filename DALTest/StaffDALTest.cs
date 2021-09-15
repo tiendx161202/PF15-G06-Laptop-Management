@@ -21,13 +21,22 @@ namespace DALTest
         [InlineData("Giang1111", "", LOGIN_FAIL)]
         private void LoginTest(string _UserName, string _Password, int expected)
         {
+            int result;
+
             Staff staff1 = new Staff() { UserName = _UserName, Password = _Password };
-            int result = sdal.Login(staff1).Role;
+            staff1 = sdal.Login(staff1);
+            if (staff1 == null)
+            {
+                result = 0;
+            }
+            else
+            {
+                result = staff1.Role;
+            }
             Assert.True(result == expected);
         }
 
     }
-
 
 
 }

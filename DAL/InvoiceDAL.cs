@@ -8,27 +8,33 @@ namespace DAL
     public class InvoiceDAL
     {
         private MySqlConnection connection = DBConfiguration.GetConnection();
-        // private MySqlDataReader reader;
 
-        public bool CreateInvoice(Invoice invoice)
-        // public bool CreateInvoice(Invoice invoice)
+        public bool CreateNewInvoice(Invoice invoice, out Invoice invoice1)
+        // public int CreateInvoice(Invoice invoice)
         {
+            invoice1 = null;
+            // foreach (Laptop lt in invoice.LaptopList)
+            // Console.WriteLine(lt.Quanity);
+
+            // Console.ReadKey();
             // int result = 0;
             bool result = true;
             if (invoice == null || invoice.LaptopList == null || invoice.LaptopList.Count == 0)
             {
                 return false;
                 // return -1;
-
             }
 
             lock (connection)
             {
                 MySqlCommand command = connection.CreateCommand();
-                connection.Open();
+                if (connection.State == System.Data.ConnectionState.Closed)
+                {
+                    connection.Open();
+                }
                 command.Connection = connection;
 
-                // Lock table to only session write
+                // Lock table to only this session write
                 command.CommandText = "LOCK TABLES Customers WRITE, Invoices WRITE, InvoiceDetails WRITE, Laptops WRITE;";
                 command.ExecuteNonQuery();
                 MySqlTransaction trans = connection.BeginTransaction();
@@ -68,23 +74,19 @@ namespace DAL
 
                     foreach (var laptop in invoice.LaptopList)
                     {
-                        if (laptop.LaptopId == null || laptop.Stock <= 0)
+                        if (laptop.LaptopId == null)
                         {
                             throw new Exception("Not Exists Laptop");
                         }
-                        // command.CommandText = "SELECT Price FROM Laptops WHERE LaptopId = @id;";
-                        // command.Parameters.Clear();
-                        // command.Parameters.AddWithValue("@id", laptop.LaptopId);
-                        // reader = command.ExecuteReader();
-                        // if (!reader.Read())
-                        // {
-                        //     throw new Exception("Not Exists Laptop!");
-                        // }
-                        // laptop.Price = 
-                        
+                        if (laptop.Stock <= 0)
+                        {
+                            throw new Exception("Not enough stock");
+                        }
+
                         // Insert To InvoiceDetails
                         command.CommandType = System.Data.CommandType.Text;
-                        command.CommandText = @"INSERT INTO InvoiceDetails(invoiceno, laptopid, quanity, price) VALUES (@InvNo, @LapID, @quanity, @price);";
+                        command.CommandText = @"INSERT INTO InvoiceDetails(invoiceno, laptopid, quanity, price) VALUES (@InvNo, @LapID, @quanity, (@quanity*@price));";
+                        command.Parameters.Clear();
                         command.Parameters.AddWithValue("@InvNo", invoice.InvoiceNo);
                         command.Parameters.AddWithValue("@LapID", laptop.LaptopId);
                         command.Parameters.AddWithValue("@quanity", laptop.Quanity);
@@ -124,6 +126,7 @@ namespace DAL
                 }
 
             }
+            invoice1 = invoice;
             return result;
         }
 
