@@ -21,60 +21,29 @@ namespace ConsolePL
             do
             {
                 Console.Clear();
-                Console.WriteLine("==========================================");
-                Console.WriteLine("|        Invoice Management System        |");
-                Console.WriteLine("==========================================");
-                Console.WriteLine("|1. LAPTOP MANAGEMENT                     |");
-                Console.WriteLine("|2. ADD CUSTOMER                          |");
-                Console.WriteLine("|3. CREATE NEW INVOICE                    |");
-                Console.WriteLine("|4. Back to \"Sale Menu\"                   |");
-                Console.WriteLine("==========================================");
+                Console.WriteLine("==================================");
+                Console.WriteLine("|        LAPTOP SHOP T&G         |");
+                Console.WriteLine("|        Invoice Menu            |");
+                Console.WriteLine("==================================");
+                Console.WriteLine("|1. CREATE NEW INVOICE           |");
+                Console.WriteLine("|2. UPDATE INVOICE               |");
+                Console.WriteLine("|3. Back to \"Sale Menu\"           |");
+                Console.WriteLine("==================================");
                 Console.Write(" # YOUR CHOICE: ");
                 choice = SupProgram.CheckChoice(Console.ReadLine());
 
                 switch (choice)
                 {
                     case 1:
-                        int choisse;
-                        Console.WriteLine("Laptop Management");
-                        Console.WriteLine("1. Get By LaptopId");
-                        Console.WriteLine("2. Get All Laptop");
-                        Console.WriteLine("3. Search By LaptopName");
-                        Console.WriteLine("4. Exit");
-                        choisse = SupProgram.CheckChoice(Console.ReadLine());
-                        switch (choisse)
-                        {
-                            case 1:
-                                SupProgram.GetByLaptopIdOrder();
-                                break;
-                            case 2:
-                                SupProgram.ShowAll();
-                                break;
-                            case 3:
-                                SupProgram.SearchName();
-                                break;
-                            case 4:
-                                SaleMenu();
-                                break;
-                            default:
-                                Console.WriteLine("Invalid! Please input 1 - 4");
-                                Console.WriteLine("Press any key to continue...");
-                                Console.ReadLine();
-                                break;
-                        }
-
-                        break;
-                    case 2:
-                        SupProgram.AddCustomer();
-                        break;
-                    case 3:
                         SupProgram.CreateNewInvoice();
                         break;
-                    case 4:
+                    case 2:
+                        break;
+                    case 3:
                         SaleMenu();
                         break;
                     default:
-                        Console.WriteLine("Invalid! Please input 1 - 4");
+                        Console.WriteLine("Invalid! Please input 1 - 3");
                         Console.WriteLine("Press any key to continue...");
                         Console.ReadLine();
                         break;
@@ -90,7 +59,9 @@ namespace ConsolePL
             {
                 Console.Clear();
                 Console.WriteLine("==================================");
-                Console.WriteLine("|            SEARCH              |");
+                Console.WriteLine("|        LAPTOP SHOP T&G         |");
+                Console.WriteLine("|        Search Menu             |");
+                Console.WriteLine("==================================");
                 Console.WriteLine("|1. SEARCH ID                    |");
                 Console.WriteLine("|2. SEARCH NAME                  |");
                 Console.WriteLine("|3. SEARCH PRICE                 |");
@@ -165,7 +136,7 @@ namespace ConsolePL
                 Console.Clear();
                 Console.WriteLine("==================================");
                 Console.WriteLine("|         LAPTOP SHOP T&G        |");
-                Console.WriteLine("|           Sale Menu            |");
+                Console.WriteLine("|         Sale Menu              |");
                 Console.WriteLine("==================================");
                 Console.WriteLine("|1. SEARCH LAPTOP                |");
                 Console.WriteLine("|2. CREATE ORDER                 |");
@@ -210,8 +181,8 @@ namespace ConsolePL
             Console.WriteLine("|       Login                   |");
             Console.WriteLine("=================================");
 
-            string _UserName = SupProgram.InputUserName(sbl);
-            string _Password = SupProgram.InputPassword(sbl);
+            string _UserName = InputUserName(sbl);
+            string _Password = InputPassword(sbl);
 
             staff.UserName = _UserName; staff.Password = _Password;
             staff = sbl.Login(staff);
@@ -238,6 +209,72 @@ namespace ConsolePL
                     AccountantMenu();
                 }
             }
+
+            static string InputUserName(StaffBL sbl)
+            {
+                string ErrorMessage;
+                string userName;
+                do
+                {
+                    Console.Write("\nUser Name: ");
+                    userName = Console.ReadLine();
+                    sbl.ValidateUserName(userName, out ErrorMessage);
+
+                    if (ErrorMessage != null)
+                    {
+                        Console.WriteLine(ErrorMessage);
+                    }
+                }
+                while (sbl.ValidateUserName(userName, out ErrorMessage) == false);
+
+                return userName;
+            }
+
+            static string InputPassword(StaffBL sbl)
+            {
+                string Password;
+                string ErrorMessage;
+
+                do
+                {
+                    Console.Write("Password: ");
+                    Password = HidePassword();
+                    sbl.ValidatePassword(Password, out ErrorMessage);
+
+                    if (ErrorMessage != null)
+                    {
+                        Console.WriteLine("\n" + ErrorMessage);
+                    }
+                    Console.WriteLine();
+                } while (sbl.ValidatePassword(Password, out ErrorMessage) == false);
+
+                return Password;
+            }
+
+            static string HidePassword()
+            {
+                var pass = string.Empty;
+                ConsoleKey key;
+                do
+                {
+                    var keyInfo = Console.ReadKey(intercept: true);
+                    key = keyInfo.Key;
+
+                    if (key == ConsoleKey.Backspace && pass.Length > 0)
+                    {
+                        Console.Write("\b \b");
+                        pass = pass[0..^1];
+                    }
+                    else if (!char.IsControl(keyInfo.KeyChar))
+                    {
+                        Console.Write("*");
+                        pass += keyInfo.KeyChar;
+                    }
+                } while (key != ConsoleKey.Enter);
+                return pass;
+            }
+
+
         }
 
         internal static class SupProgram
@@ -495,104 +532,6 @@ namespace ConsolePL
                 return PgLst;
             }
 
-            internal static int IntputMaxPrice(LaptopBL lbl, decimal _minPrice)
-            {
-                int _maxPrice = 0;
-                bool pass = true;
-                string ErrorMessage = string.Empty;
-
-                do
-                {
-                    Console.Write("\nInput max price: ");
-                    string sprice = Console.ReadLine();
-                    if (string.IsNullOrEmpty(sprice) || string.IsNullOrWhiteSpace(sprice))
-                    {
-                        Console.WriteLine(" Max price should not be empty or whitespace!");
-                        continue;
-                    }
-                    else
-                    {
-                        _maxPrice = Convert.ToInt32(sprice);
-                    }
-
-                    pass = lbl.ValidateMaxPrice(_minPrice, _maxPrice, out ErrorMessage);
-
-                    if (ErrorMessage != null)
-                    {
-                        Console.WriteLine(ErrorMessage);
-                    }
-
-                } while (!pass);
-
-                return _maxPrice;
-            }
-
-            internal static int IntputMinPrice(LaptopBL lbl)
-            {
-                int _minPrice = 0;
-                bool pass = true;
-                string ErrorMessage = string.Empty;
-
-                do
-                {
-                    Console.Write("\nInput min price: ");
-                    string sprice = Console.ReadLine();
-                    if (string.IsNullOrEmpty(sprice) || string.IsNullOrWhiteSpace(sprice))
-                    {
-                        Console.WriteLine(" Min price should not be empty or whitespace!");
-                        continue;
-                    }
-                    else
-                    {
-                        _minPrice = Convert.ToInt32(sprice);
-                    }
-
-                    pass = lbl.ValidateMinPrice(_minPrice, out ErrorMessage);
-
-                    if (ErrorMessage != null)
-                    {
-                        Console.WriteLine(ErrorMessage);
-                    }
-
-                } while (!pass);
-
-                return _minPrice;
-            }
-
-            internal static void SearchPrice()
-            {
-                decimal _minPrice = 0;
-                decimal _maxPrice = 0;
-                var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
-
-                LaptopBL lbl = new LaptopBL();
-
-                _minPrice = IntputMinPrice(lbl);
-                _maxPrice = IntputMaxPrice(lbl, _minPrice);
-
-                Laptop laptop = new Laptop() { minPrice = _minPrice, maxPrice = _maxPrice };
-                List<Laptop> LaptopList = lbl.GetLaptopByPrice(laptop);
-
-                int count = LaptopList.Count;
-
-                if (count == 0)
-                {
-                    laptop = null;
-                    Console.WriteLine("Not found anything in with price range Min: {0} - Max: {1}\n", string.Format(info, "{0:c}", _minPrice), string.Format(info, "{0:c}", _maxPrice));
-                }
-                else
-                {
-                    // int pageNum = 0;
-                    string resString = "for price range Min: " + _minPrice + " - Max: " + _maxPrice + " !";
-                    // Console.WriteLine("Found {0} result for price range Min: {1} - Max: {2}\n", count, string.Format(info, "{0:c}", _minPrice), string.Format(info, "{0:c}", _maxPrice));
-                    // DisplayLaptopList(LaptopList, laptop, pageNum, resString);
-                    GotoPage(LaptopList, laptop, resString);
-                }
-
-                Console.ReadKey();
-
-            }
-
             internal static void ShowAll()
             {
                 LaptopBL lbl = new LaptopBL();
@@ -617,35 +556,111 @@ namespace ConsolePL
                 Console.ReadKey();
             }
 
-            internal static string InputNameSearch(LaptopBL lbl)
+            internal static void SearchPrice()
             {
-                string ErrorMessage;
-                string Name;
+                decimal _minPrice = 0;
+                decimal _maxPrice = 0;
+                // string ErrorMessage;
+                // bool pass = true;
+                var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
 
-                do
+                LaptopBL lbl = new LaptopBL();
+
+                _minPrice = IntputMinPrice(lbl);
+                _maxPrice = IntputMaxPrice(lbl, _minPrice);
+
+
+                Laptop laptop = new Laptop() { minPrice = _minPrice, maxPrice = _maxPrice };
+                List<Laptop> LaptopList = lbl.GetLaptopByPrice(laptop);
+
+                int count = LaptopList.Count;
+
+                if (count == 0)
                 {
-                    Console.Write("\nInput your search: ");
-                    Name = Console.ReadLine();
-                    lbl.ValidateName(Name, out ErrorMessage);
-
-                    if (ErrorMessage != null)
-                    {
-                        Console.WriteLine(ErrorMessage);
-                    }
+                    laptop = null;
+                    Console.WriteLine("Not found anything in with price range Min: {0} - Max: {1}\n", string.Format(info, "{0:c}", _minPrice), string.Format(info, "{0:c}", _maxPrice));
                 }
-                while (lbl.ValidateName(Name, out ErrorMessage) == false);
+                else
+                {
+                    // int pageNum = 0;
+                    string resString = "for price range Min: " + _minPrice + " - Max: " + _maxPrice + " !";
+                    // Console.WriteLine("Found {0} result for price range Min: {1} - Max: {2}\n", count, string.Format(info, "{0:c}", _minPrice), string.Format(info, "{0:c}", _maxPrice));
+                    // DisplayLaptopList(LaptopList, laptop, pageNum, resString);
+                    GotoPage(LaptopList, laptop, resString);
+                }
 
-                return Name;
+                Console.ReadKey();
+
+                static decimal IntputMaxPrice(LaptopBL lbl, decimal _minPrice)
+                {
+                    decimal d_maxPrice = decimal.Zero;
+                    string s_maxPrice = string.Empty;
+                    bool pass = true;
+                    string ErrorMessage = string.Empty;
+
+                    do
+                    {
+                        Console.Write("\nInput max price: ");
+                        s_maxPrice = Console.ReadLine();
+
+                        pass = lbl.ValidateMaxPrice(_minPrice, s_maxPrice, out d_maxPrice, out ErrorMessage);
+
+                        if (ErrorMessage != null)
+                        {
+                            Console.WriteLine(ErrorMessage);
+                        }
+
+                    } while (!pass);
+
+                    return d_maxPrice;
+                }
+
+                static decimal IntputMinPrice(LaptopBL lbl)
+                {
+                    decimal d_minPrice = decimal.Zero;
+                    string s_minPrice;
+                    bool pass = true;
+                    string ErrorMessage = string.Empty;
+
+                    do
+                    {
+                        Console.Write("\nInput min price: ");
+                        s_minPrice = Console.ReadLine();
+
+                        pass = lbl.ValidateMinPrice(s_minPrice, out d_minPrice, out ErrorMessage);
+
+                        if (ErrorMessage != null)
+                        {
+                            Console.WriteLine(ErrorMessage);
+                        }
+                    } while (!pass);
+
+                    return d_minPrice;
+                }
+
             }
 
             internal static void SearchName()
             {
                 string _name = string.Empty;
                 LaptopBL lbl = new LaptopBL();
+                string ErrorMessage;
 
                 try
                 {
-                    _name = InputNameSearch(lbl);
+                    do
+                    {
+                        Console.Write("\nInput your search: ");
+                        _name = Console.ReadLine();
+                        lbl.ValidateName(_name, out ErrorMessage);
+
+                        if (ErrorMessage != null)
+                        {
+                            Console.WriteLine(ErrorMessage);
+                        }
+                    }
+                    while (lbl.ValidateName(_name, out ErrorMessage) == false);
+
                     Laptop laptop = new Laptop() { Name = _name };
                     List<Laptop> LaptopList = lbl.GetLaptopByName(laptop);
 
@@ -741,70 +756,6 @@ namespace ConsolePL
                     return menuChoice;
                 }
                 return menuChoice;
-            }
-
-            internal static string InputUserName(StaffBL sbl)
-            {
-                string ErrorMessage;
-                string userName;
-                do
-                {
-                    Console.Write("\nUser Name: ");
-                    userName = Console.ReadLine();
-                    sbl.ValidateUserName(userName, out ErrorMessage);
-
-                    if (ErrorMessage != null)
-                    {
-                        Console.WriteLine(ErrorMessage);
-                    }
-                }
-                while (sbl.ValidateUserName(userName, out ErrorMessage) == false);
-
-                return userName;
-            }
-
-            internal static string InputPassword(StaffBL sbl)
-            {
-                string Password;
-                string ErrorMessage;
-
-                do
-                {
-                    Console.Write("Password: ");
-                    Password = SupProgram.HidePassword();
-                    sbl.ValidatePassword(Password, out ErrorMessage);
-
-                    if (ErrorMessage != null)
-                    {
-                        Console.WriteLine("\n" + ErrorMessage);
-                    }
-                    Console.WriteLine();
-                } while (sbl.ValidatePassword(Password, out ErrorMessage) == false);
-
-                return Password;
-            }
-
-            internal static string HidePassword()
-            {
-                var pass = string.Empty;
-                ConsoleKey key;
-                do
-                {
-                    var keyInfo = Console.ReadKey(intercept: true);
-                    key = keyInfo.Key;
-
-                    if (key == ConsoleKey.Backspace && pass.Length > 0)
-                    {
-                        Console.Write("\b \b");
-                        pass = pass[0..^1];
-                    }
-                    else if (!char.IsControl(keyInfo.KeyChar))
-                    {
-                        Console.Write("*");
-                        pass += keyInfo.KeyChar;
-                    }
-                } while (key != ConsoleKey.Enter);
-                return pass;
             }
 
         }
