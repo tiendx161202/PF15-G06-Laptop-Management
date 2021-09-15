@@ -13,6 +13,39 @@ namespace ConsolePL
         {
             Login();
         }
+        private static void GetByLaptopIdOrder()
+        {
+            DateTime now = DateTime.Now;
+            int _LaptopId = 0;
+            do
+            {
+                Console.Write("Input your Laptop ID: ");
+                _LaptopId = CheckChoice(Console.ReadLine());
+                if (_LaptopId == 0)
+                {
+                    Console.WriteLine("Your Laptop ID is invalid, re-input ...");
+                }
+            }
+            while (_LaptopId == 0);
+            LaptopBL lbl1 = new LaptopBL();
+            Laptop laptop = new Laptop() { LaptopId = _LaptopId };
+            laptop = lbl1.GetLaptop(laptop);
+            var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+            if (laptop.Status == Laptop.LaptopStatus.NOT_FOUND)
+            {
+                Console.WriteLine("Not found with id {0}", laptop.LaptopId);
+            }
+            else
+            {
+                Console.WriteLine(now);
+                Console.WriteLine("Laptop Name :" + laptop.Name);
+                Console.WriteLine("Price : " + string.Format(info, "{0:c}", laptop.Price));
+                Console.WriteLine("Insurance:" + laptop.WarrantyPeriod);
+                Console.WriteLine("Status: " + laptop.Status);
+                Console.WriteLine("Amount: " + laptop.Stock);
+            }
+            Console.ReadKey();
+        }
 
         private static void CreateInvoice()
         {
@@ -181,10 +214,13 @@ namespace ConsolePL
                         switch (choisse)
                         {
                             case 1:
+                                GetByLaptopIdOrder();
                                 break;
                             case 2:
+                                ShowAll();
                                 break;
                             case 3:
+                                SearchName();
                                 break;
                             case 4:
                                 SaleMenu();
