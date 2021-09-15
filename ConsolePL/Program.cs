@@ -15,115 +15,6 @@ namespace ConsolePL
             Login();
         }
 
-        private static void GetByLaptopIdOrder()
-        {
-            DateTime now = DateTime.Now;
-            int _LaptopId = 0;
-            do
-            {
-                Console.Write("Input your Laptop ID: ");
-                _LaptopId = SupProgram.CheckChoice(Console.ReadLine());
-                if (_LaptopId == 0)
-                {
-                    Console.WriteLine("Your Laptop ID is invalid, re-input ...");
-                }
-            }
-            while (_LaptopId == 0);
-            LaptopBL lbl1 = new LaptopBL();
-            Laptop laptop = new Laptop() { LaptopId = _LaptopId };
-            laptop = lbl1.GetLaptop(laptop);
-            var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
-            if (laptop.Status == Laptop.LaptopStatus.NOT_FOUND)
-            {
-                Console.WriteLine("Not found with id {0}", laptop.LaptopId);
-            }
-            else
-            {
-                Console.WriteLine(now);
-                Console.WriteLine("Laptop Name :" + laptop.Name);
-                Console.WriteLine("Price : " + string.Format(info, "{0:c}", laptop.Price));
-                Console.WriteLine("Insurance:" + laptop.WarrantyPeriod);
-                Console.WriteLine("Status: " + laptop.Status);
-                Console.WriteLine("Amount: " + laptop.Stock);
-            }
-            Console.ReadKey();
-        }
-
-        private static void ChoiceAfterShowList(List<Laptop> Pglist)
-        {
-            int idChoice;
-            bool ans = false;
-
-            do
-            {
-                Console.Write("Input ID Laptop to show details: ");
-                idChoice = SupProgram.CheckChoice(Console.ReadLine());
-
-                if (idChoice == 0)
-                {
-                    Console.WriteLine("Error ID, re input ...");
-                }
-                else if (idChoice != 0)
-                {
-                    foreach (var lap in Pglist)
-                    {
-                        if (lap.LaptopId == idChoice)
-                        {
-                            ans = true;
-                            break;
-                        }
-                        else
-                        {
-                            ans = false;
-                        }
-                    }
-
-                    if (ans)
-                    {
-                        Laptop lt = new Laptop() { LaptopId = idChoice };
-                        int index = Pglist.IndexOf(lt);
-                        SupProgram.DisplayLaptopInfo(Pglist[index]);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Error not exists in page, re input ...");
-                    }
-                }
-            } while (idChoice == 0);
-
-
-        }
-
-        private static void GotoPage(List<Laptop> LaptopList, Laptop laptop, string resString)
-        {
-            int page = 1;
-            int count = LaptopList.Count;
-            double resPage = count % 10 > 0 ? count / 10 + 1 : count / 10;
-
-            List<Laptop> Pglist = null;
-
-            if (resPage == 1)
-            {
-                Pglist = SupProgram.DisplayLaptopList(LaptopList, laptop, page, resString);
-                Console.WriteLine(" PAGE {0}", page);
-            }
-            else if (resPage > 1)
-            {
-                do
-                {
-                    Pglist = SupProgram.DisplayLaptopList(LaptopList, laptop, page, resString);
-                    Console.WriteLine(" PAGE {0}", page);
-                    do
-                    {
-                        Console.Write("Input 0 to exit next page or your page choice: ");
-                        page = SupProgram.CheckChoice(Console.ReadLine());
-                    } while (page > resPage || page < 0);
-                } while (page != 0);
-
-            }
-            ChoiceAfterShowList(Pglist);
-        }
-
         private static void InvoiceMenu()
         {
             int choice;
@@ -154,7 +45,7 @@ namespace ConsolePL
                         switch (choisse)
                         {
                             case 1:
-                                GetByLaptopIdOrder();
+                                SupProgram.GetByLaptopIdOrder();
                                 break;
                             case 2:
                                 SupProgram.ShowAll();
@@ -351,6 +242,115 @@ namespace ConsolePL
 
         internal static class SupProgram
         {
+            internal static void GetByLaptopIdOrder()
+            {
+                DateTime now = DateTime.Now;
+                int _LaptopId = 0;
+                do
+                {
+                    Console.Write("Input your Laptop ID: ");
+                    _LaptopId = SupProgram.CheckChoice(Console.ReadLine());
+                    if (_LaptopId == 0)
+                    {
+                        Console.WriteLine("Your Laptop ID is invalid, re-input ...");
+                    }
+                }
+                while (_LaptopId == 0);
+                LaptopBL lbl1 = new LaptopBL();
+                Laptop laptop = new Laptop() { LaptopId = _LaptopId };
+                laptop = lbl1.GetLaptop(laptop);
+                var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+                if (laptop.Status == Laptop.LaptopStatus.NOT_FOUND)
+                {
+                    Console.WriteLine("Not found with id {0}", laptop.LaptopId);
+                }
+                else
+                {
+                    Console.WriteLine(now);
+                    Console.WriteLine("Laptop Name :" + laptop.Name);
+                    Console.WriteLine("Price : " + string.Format(info, "{0:c}", laptop.Price));
+                    Console.WriteLine("Insurance:" + laptop.WarrantyPeriod);
+                    Console.WriteLine("Status: " + laptop.Status);
+                    Console.WriteLine("Amount: " + laptop.Stock);
+                }
+                Console.ReadKey();
+            }
+
+            internal static void ChoiceAfterShowList(List<Laptop> Pglist)
+            {
+                int idChoice;
+                bool ans = false;
+
+                do
+                {
+                    Console.Write("Input ID Laptop to show details: ");
+                    idChoice = SupProgram.CheckChoice(Console.ReadLine());
+
+                    if (idChoice == 0)
+                    {
+                        Console.WriteLine("Error ID, re input ...");
+                    }
+                    else if (idChoice != 0)
+                    {
+                        foreach (var lap in Pglist)
+                        {
+                            if (lap.LaptopId == idChoice)
+                            {
+                                ans = true;
+                                break;
+                            }
+                            else
+                            {
+                                ans = false;
+                            }
+                        }
+
+                        if (ans)
+                        {
+                            Laptop lt = new Laptop() { LaptopId = idChoice };
+                            int index = Pglist.IndexOf(lt);
+                            SupProgram.DisplayLaptopInfo(Pglist[index]);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Error not exists in page, re input ...");
+                        }
+                    }
+                } while (idChoice == 0);
+
+
+            }
+
+            internal static void GotoPage(List<Laptop> LaptopList, Laptop laptop, string resString)
+            {
+                int page = 1;
+                int count = LaptopList.Count;
+                double resPage = count % 10 > 0 ? count / 10 + 1 : count / 10;
+
+                List<Laptop> Pglist = null;
+
+                if (resPage == 1)
+                {
+                    Pglist = SupProgram.DisplayLaptopList(LaptopList, laptop, page, resString);
+                    Console.WriteLine(" PAGE {0}", page);
+                }
+                else if (resPage > 1)
+                {
+                    do
+                    {
+                        Pglist = SupProgram.DisplayLaptopList(LaptopList, laptop, page, resString);
+                        Console.WriteLine(" PAGE {0}", page);
+                        do
+                        {
+                            Console.Write("Input 0 to exit next page or your page choice: ");
+                            page = SupProgram.CheckChoice(Console.ReadLine());
+                        } while (page > resPage || page < 0);
+                    } while (page != 0);
+
+                }
+                ChoiceAfterShowList(Pglist);
+            }
+
             internal static void CreateNewInvoice()
             {
                 CustomerBL cbl = new CustomerBL();
