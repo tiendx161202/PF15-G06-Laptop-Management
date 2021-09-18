@@ -32,24 +32,19 @@ namespace DALTest
 
         private void SearchIdTest(int _id, bool expected)
         {
-            bool match;
-            Laptop laptop1 = new Laptop() { LaptopId = _id };
-            laptop1 = ldal.GetLaptop(laptop1);
+            Laptop result = new Laptop() { LaptopId = _id };
+            result = ldal.GetLaptopById(result);
 
-            if (laptop1 == null)
+            if (expected)
             {
-                match = false;
-            }
-            else if (_id == laptop1.LaptopId)
-            {
-                match = true;
+                Assert.True(result != null);
+                Assert.True(result.LaptopId == _id);
             }
             else
             {
-                match = false;
+                Assert.True(result == null);
             }
 
-            Assert.True(match == expected);
         }
 
     }

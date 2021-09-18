@@ -8,7 +8,7 @@ namespace DAL
     {
         MySqlConnection connection = DBConfiguration.GetConnection();
 
-        public Laptop GetLaptop(Laptop laptop)
+        public Laptop GetLaptopById(Laptop laptop)
         {
             lock (connection)
             {

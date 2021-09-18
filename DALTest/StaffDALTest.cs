@@ -21,19 +21,19 @@ namespace DALTest
         [InlineData("Giang1111", "", LOGIN_FAIL)]
         private void LoginTest(string _UserName, string _Password, int expected)
         {
-            int result;
+            Staff result = new Staff() { UserName = _UserName, Password = _Password };
+            result = sdal.Login(result);
 
-            Staff staff1 = new Staff() { UserName = _UserName, Password = _Password };
-            staff1 = sdal.Login(staff1);
-            if (staff1 == null)
+            if (expected == LOGIN_FAIL)
             {
-                result = 0;
+                Assert.True(result == null);
             }
             else
             {
-                result = staff1.Role;
+                Assert.True(result != null);
+                Assert.True(expected == result.Role);
             }
-            Assert.True(result == expected);
+
         }
 
     }

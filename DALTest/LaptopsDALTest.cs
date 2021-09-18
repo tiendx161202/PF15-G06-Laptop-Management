@@ -1,7 +1,7 @@
+using System;
 using Xunit;
 using DAL;
 using Persistance;
-using System;
 using System.Collections.Generic;
 
 namespace DALTest
@@ -22,28 +22,26 @@ namespace DALTest
         [InlineData("MSI", 3)]
         [InlineData("HP", 3)]
         [InlineData("LG", 2)]
-        [InlineData(" ", 25)]
+        [InlineData("", 25)]
         private void GetNameTest(string _name, int expected)
         {
             Laptop laptop1 = new Laptop() { Name = _name };
             List<Laptop> list = lsdal.GetLaptops(LaptopFilter.FILTER_BY_LAPTOP_NAME, laptop1);
 
-            int match = 0;
-            if (list == null)
+            if (expected == 0)
             {
-                match = 0;
+                Assert.True(list == null);
             }
             else
             {
+                Assert.True(list != null);
+                Assert.True(list.Count == expected);
+
                 foreach (Laptop lt in list)
                 {
-                    if (lt.Name.Contains(_name, comparisonType: StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        match++;
-                    }
+                    Assert.Contains(_name.ToLower(), lt.Name.ToLower());
                 }
             }
-            Assert.True(match == expected);
         }
 
         [Theory]
@@ -58,23 +56,21 @@ namespace DALTest
         {
             Laptop laptop1 = new Laptop() { minPrice = _min, maxPrice = _max };
             List<Laptop> list = lsdal.GetLaptops(LaptopFilter.FILTER_BY_LAPTOP_PRICE, laptop1);
-            int match = 0;
 
-            if (list == null)
+            if (expected == 0)
             {
-                match = 0;
+                Assert.True(list == null);
             }
             else
             {
+                Assert.True(list != null);
+                Assert.True(list.Count == expected);
+
                 foreach (Laptop lt in list)
                 {
-                    if (_min <= lt.Price && lt.Price <= _max)
-                    {
-                        ++match;
-                    }
+                    Assert.True(_min <= lt.Price && lt.Price <= _max);
                 }
             }
-            Assert.True(match == expected);
         }
 
     }

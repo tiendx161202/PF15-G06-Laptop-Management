@@ -14,7 +14,7 @@ namespace BL
 
         public Laptop GetLaptop(Laptop laptop)
         {
-            return dal.GetLaptop(laptop);
+            return dal.GetLaptopById(laptop);
         }
 
         public List<Laptop> GetLaptopByPrice(Laptop laptop)

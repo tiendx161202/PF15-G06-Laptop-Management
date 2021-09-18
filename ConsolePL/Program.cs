@@ -490,13 +490,12 @@ namespace ConsolePL
 
             internal static List<Laptop> DisplayLaptopList(List<Laptop> LaptopList, Laptop laptop, int pageNum, string resString)
             {
-                List<Laptop> PgLst = null;
-
                 if (LaptopList == null)
                 {
                     return null;
                 }
 
+                List<Laptop> PgLst = null;
                 List<Laptop> GetPage(List<Laptop> PageList, int pageNum, int PageSize = 10)
                 {
                     return PageList.Skip(pageNum * PageSize).Take(PageSize).ToList();
@@ -560,7 +559,7 @@ namespace ConsolePL
             {
                 decimal _minPrice = 0;
                 decimal _maxPrice = 0;
-                // string ErrorMessage;
+                // string ErrorMessage string.Empty;
                 // bool pass = true;
                 var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
 
