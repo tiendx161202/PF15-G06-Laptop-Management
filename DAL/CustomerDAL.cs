@@ -47,9 +47,9 @@ namespace DAL
         {
             Customer cus = new Customer();
             cus.CustomerId = reader.GetInt32("Customerid");
-            cus.CustomerName = reader.GetString("Name");
-            cus.CustomerPhone = reader.GetString("Phone");
-            cus.CustomerAddress = reader.GetString("Address");
+            cus.CustomerName = reader.GetString("CustomerName");
+            cus.CustomerPhone = reader.GetString("CustomerPhone");
+            cus.CustomerAddress = reader.GetString("CustomerAddress");
             return cus;
         }
 

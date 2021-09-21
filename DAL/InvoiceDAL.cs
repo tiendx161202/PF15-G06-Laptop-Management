@@ -1,6 +1,7 @@
 using System;
 using MySql.Data.MySqlClient;
 using Persistance;
+using System.Collections.Generic;
 
 namespace DAL
 {
@@ -9,20 +10,104 @@ namespace DAL
     {
         private MySqlConnection connection = DBConfiguration.GetConnection();
 
+        public Invoice GetInvoiceById(Invoice invoice)
+        {
+            lock (connection)
+            {
+                MySqlCommand command = connection.CreateCommand();
+                if (connection.State == System.Data.ConnectionState.Closed)
+                {
+                    connection.Open();
+                }
+
+                try
+                {
+                    if (invoice == null)
+                    {
+                        throw new Exception("Can't find invoice!");
+                    }
+
+                    command.CommandText = @"SELECT * FROM invoices i 
+                                            INNER JOIN invoicedetails d ON i.InvoiceNo = d.InvoiceNo 
+                                            INNER JOIN staffs s ON i.SaleId = s.StaffID OR i.AccountantId = s.StaffID 
+                                            INNER JOIN customers c ON i.Customerid = c.Customerid
+                                            INNER JOIN laptops l ON l.LaptopId = d.LaptopId
+                                            INNER JOIN brands b ON b.BrandId = l.BrandId
+                                            WHERE i.InvoiceNo = @invoiceNo;";
+                    command.Parameters.AddWithValue("@invoiceNo", invoice.InvoiceNo);
+                    MySqlDataReader reader = command.ExecuteReader();
+                    if (!reader.Read())
+                    {
+                        invoice = null;
+                        throw new Exception("Data empty ...");
+                    }
+                    invoice = GetInvoice(reader);
+                    reader.Close();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+
+            return invoice;
+        }
+
+        private Invoice GetInvoice(MySqlDataReader reader)
+        {
+            Invoice invoice = new Invoice();
+            invoice.InvoiceNo = reader.GetInt32("InvoiceNo");
+
+            invoice.InvoiceSale = new Staff() { StaffId = reader.GetInt32("SaleId") };
+            if (invoice.InvoiceSale.StaffId != 0)
+            {
+                invoice.InvoiceSale.Name = reader.GetString("StaffName");
+                invoice.InvoiceSale.Phone = reader.GetString("StaffPhone");
+                invoice.InvoiceSale.Email = reader.GetString("StaffEmail");
+                invoice.InvoiceSale.Role = reader.GetInt16("Role");
+            }
+
+            invoice.InvoiceAccountant = new Staff() { StaffId = reader.GetInt32("AccountantId") };
+            if (invoice.InvoiceAccountant.StaffId != 0)
+            {
+                invoice.InvoiceAccountant.Name = reader.GetString("StaffName");
+                invoice.InvoiceAccountant.Phone = reader.GetString("StaffPhone");
+                invoice.InvoiceAccountant.Email = reader.GetString("StaffEmail");
+                invoice.InvoiceAccountant.Role = reader.GetInt16("Role");
+            }
+
+            invoice.InvoiceCustomer = new Customer()
+            {
+                CustomerId = reader.GetInt32("CustomerId"),
+                CustomerName = reader.GetString("CustomerName"),
+                CustomerPhone = reader.GetString("CustomerPhone"),
+                CustomerAddress = reader.GetString("CustomerAddress")
+            };
+
+            invoice.InvoiceDate = reader.GetDateTime("Datetime");
+
+            LaptopDAL ldal = new LaptopDAL();
+            Laptop lt = ldal.GetDataLaptop(reader);
+            invoice.LaptopList.Add(lt);
+            while (reader.Read())
+            {
+                Laptop ltt = ldal.GetDataLaptop(reader);
+                invoice.LaptopList.Add(ltt);
+            }
+            return invoice;
+        }
+
         public bool CreateNewInvoice(Invoice invoice, out Invoice invoice1)
-        // public int CreateInvoice(Invoice invoice)
         {
             invoice1 = null;
-            // foreach (Laptop lt in invoice.LaptopList)
-            // Console.WriteLine(lt.Quanity);
-
-            // Console.ReadKey();
-            // int result = 0;
             bool result = true;
             if (invoice == null || invoice.LaptopList == null || invoice.LaptopList.Count == 0)
             {
                 return false;
-                // return -1;
             }
 
             lock (connection)
@@ -51,11 +136,11 @@ namespace DAL
                 {
                     if (invoice.InvoiceCustomer == null || invoice.InvoiceCustomer.CustomerId == null)
                     {
-                       throw new Exception("Can't find Customer!");
+                        throw new Exception("Can't find Customer!");
                     }
 
                     // Insert Order
-                    command = new MySqlCommand ("p_createInvoice", connection);
+                    command = new MySqlCommand("p_createInvoice", connection);
                     command.CommandType = System.Data.CommandType.StoredProcedure;
                     command.Parameters.AddWithValue("@SaleId", invoice.InvoiceSale.StaffId);
                     command.Parameters["@SaleId"].Direction = System.Data.ParameterDirection.Input;
@@ -68,7 +153,7 @@ namespace DAL
                     command.Parameters.AddWithValue("@InvoiceNo", MySqlDbType.Int32);
                     command.Parameters["@InvoiceNo"].Direction = System.Data.ParameterDirection.Output;
                     command.ExecuteNonQuery();
-                    invoice.InvoiceNo = (int) command.Parameters["@InvoiceNo"].Value;
+                    invoice.InvoiceNo = (int)command.Parameters["@InvoiceNo"].Value;
 
                     // result = invoice.InvoiceNo;
 
@@ -132,3 +217,69 @@ namespace DAL
 
     }
 }
+
+
+// public static class InvoiceUpdateFilter
+// {
+//     public const int CHANGE
+// }
+
+// public bool UpdateInvoice(Invoice invoice)
+// {
+//     bool result = true;
+//     if (invoice == null || invoice.LaptopList == null || invoice.LaptopList.Count == 0)
+//     {
+//         return false;
+//     }
+
+//     lock (connection)
+//     {
+//         MySqlCommand command = connection.CreateCommand();
+//         if (connection.State == System.Data.ConnectionState.Closed)
+//         {
+//             connection.Open();
+//         }
+//         command.Connection = connection;
+
+
+//         // Lock table to only this session write
+//         command.CommandText = "LOCK TABLES Customers WRITE, Invoices WRITE, InvoiceDetails WRITE, Laptops WRITE;";
+//         command.ExecuteNonQuery();
+//         MySqlTransaction trans = connection.BeginTransaction();
+//         command.Transaction = trans;
+
+//         try
+//         {
+//             if (invoice == null)
+//             {
+//                 throw new Exception("Can't find invoice!");
+//             }
+
+
+
+
+//         }
+//         catch (Exception ex)
+//         {
+//             Console.WriteLine(ex.Message);
+//             result = false;
+//             // result = -100;
+//             try
+//             {
+//                 trans.Rollback();
+//             }
+//             catch
+//             {}
+//         }
+//         finally
+//         {
+//             command.CommandType = System.Data.CommandType.Text;
+//             command.CommandText = "UNLOCK TABLES;";
+//             command.ExecuteNonQuery();
+//             connection.Close();
+//         }
+
+//     }
+
+//     return result;
+// }

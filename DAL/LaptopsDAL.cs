@@ -32,7 +32,7 @@ namespace DAL
                         query = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId ORDER BY Laptopid;";
                         break;
                     case LaptopFilter.FILTER_BY_LAPTOP_NAME:
-                        query = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId WHERE Laptops.Name LIKE CONCAT('%',@Name,'%') ORDER BY Laptopid;";
+                        query = "SELECT * FROM Laptops INNER JOIN Brands ON laptops.BrandId = brands.BrandId WHERE Laptops.LaptopName LIKE CONCAT('%',@Name,'%') ORDER BY Laptopid;";
                         command.Parameters.AddWithValue("@Name", laptop.Name);
                         break;
                     case LaptopFilter.FILTER_BY_LAPTOP_PRICE:
@@ -91,7 +91,7 @@ namespace DAL
             laptop.LaptopId = reader.GetInt32("LaptopId");
             laptop.BrandId = reader.GetInt32("BrandId");
             laptop.BrandName = reader.GetString("Brandname");
-            laptop.Name = reader.GetString("Name");
+            laptop.Name = reader.GetString("LaptopName");
             laptop.Price = reader.GetDecimal("Price");
             laptop.Ram = reader.GetString("RAM");
             laptop.HardDisk = reader.GetString("HardDisk");

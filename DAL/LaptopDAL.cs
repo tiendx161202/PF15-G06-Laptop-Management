@@ -27,7 +27,7 @@ namespace DAL
 
                     if (reader.Read() == true)
                     {
-                        laptop = GetData(reader);
+                        laptop = GetDataLaptop(reader);
                     }
                     else
                     {
@@ -36,10 +36,10 @@ namespace DAL
                     }
                     reader.Close();
                 }
-                catch
+                catch (Exception ex)
                 {
                     laptop = null;
-                    // Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.Message);
                     // laptop.Status = Laptop.LaptopStatus.EXCEPTION;
                 }
                 finally
@@ -51,13 +51,13 @@ namespace DAL
             return laptop;
         }
 
-        private Laptop GetData(MySqlDataReader reader)
+        public Laptop GetDataLaptop(MySqlDataReader reader)
         {
             Laptop laptop = new Laptop();
             laptop.LaptopId = reader.GetInt32("LaptopId");
             laptop.BrandId = reader.GetInt32("BrandId");
             laptop.BrandName = reader.GetString("Brandname");
-            laptop.Name = reader.GetString("Name");
+            laptop.Name = reader.GetString("LaptopName");
             laptop.Price = reader.GetDecimal("Price");
             laptop.Ram = reader.GetString("RAM");
             laptop.HardDisk = reader.GetString("HardDisk");

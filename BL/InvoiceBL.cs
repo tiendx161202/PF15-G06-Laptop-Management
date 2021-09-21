@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Persistance;
 using DAL;
 
@@ -9,13 +8,16 @@ namespace BL
     {
         private InvoiceDAL idal = new InvoiceDAL(); 
 
-        // public int CreateInvoice(Invoice invoice)
+
+        public Invoice GetInvoiceById(Invoice invoice)
+        {
+            return idal.GetInvoiceById(invoice);
+        }
+
         public bool CreateInvoice(Invoice invoice, out Invoice invoice1)
         {
-            // int result = idal.CreateInvoice(invoice);
-            bool result = idal.CreateNewInvoice(invoice, out invoice1);
-
-            return result;
+            bool result;
+            return result = idal.CreateNewInvoice(invoice, out invoice1);
         }
     }
 }
