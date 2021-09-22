@@ -10,6 +10,68 @@ namespace DAL
     {
         private MySqlConnection connection = DBConfiguration.GetConnection();
 
+
+        public bool ChangeQuanity(Invoice invoice)
+        {
+            bool result = true;
+            if (invoice == null || invoice.LaptopList == null || invoice.LaptopList.Count == 0)
+            {
+                return false;
+            }
+
+            lock (connection)
+            {
+                MySqlCommand command = connection.CreateCommand();
+                if (connection.State == System.Data.ConnectionState.Closed)
+                {
+                    connection.Open();
+                }
+                command.Connection = connection;
+
+
+                // Lock table to only this session write
+                command.CommandText = "LOCK TABLES InvoiceDetails WRITE, Laptops WRITE;";
+                command.ExecuteNonQuery();
+                MySqlTransaction trans = connection.BeginTransaction();
+                command.Transaction = trans;
+
+                try
+                {
+                    if (invoice == null)
+                    {
+                        throw new Exception("Can't find invoice!");
+                    }
+
+
+
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    result = false;
+                    // result = -100;
+                    try
+                    {
+                        trans.Rollback();
+                    }
+                    catch
+                    { }
+                }
+                finally
+                {
+                    command.CommandType = System.Data.CommandType.Text;
+                    command.CommandText = "UNLOCK TABLES;";
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
+
+            }
+
+            return result;
+        }
+
+
         public Invoice GetInvoiceById(Invoice invoice)
         {
             lock (connection)
@@ -217,69 +279,3 @@ namespace DAL
 
     }
 }
-
-
-// public static class InvoiceUpdateFilter
-// {
-//     public const int CHANGE
-// }
-
-// public bool UpdateInvoice(Invoice invoice)
-// {
-//     bool result = true;
-//     if (invoice == null || invoice.LaptopList == null || invoice.LaptopList.Count == 0)
-//     {
-//         return false;
-//     }
-
-//     lock (connection)
-//     {
-//         MySqlCommand command = connection.CreateCommand();
-//         if (connection.State == System.Data.ConnectionState.Closed)
-//         {
-//             connection.Open();
-//         }
-//         command.Connection = connection;
-
-
-//         // Lock table to only this session write
-//         command.CommandText = "LOCK TABLES Customers WRITE, Invoices WRITE, InvoiceDetails WRITE, Laptops WRITE;";
-//         command.ExecuteNonQuery();
-//         MySqlTransaction trans = connection.BeginTransaction();
-//         command.Transaction = trans;
-
-//         try
-//         {
-//             if (invoice == null)
-//             {
-//                 throw new Exception("Can't find invoice!");
-//             }
-
-
-
-
-//         }
-//         catch (Exception ex)
-//         {
-//             Console.WriteLine(ex.Message);
-//             result = false;
-//             // result = -100;
-//             try
-//             {
-//                 trans.Rollback();
-//             }
-//             catch
-//             {}
-//         }
-//         finally
-//         {
-//             command.CommandType = System.Data.CommandType.Text;
-//             command.CommandText = "UNLOCK TABLES;";
-//             command.ExecuteNonQuery();
-//             connection.Close();
-//         }
-
-//     }
-
-//     return result;
-// }

@@ -12,7 +12,6 @@ namespace ConsolePL
         private static Staff staff = new Staff();
         private static void Main(string[] args)
         {
-            ConfirmPay();
             Login();
         }
 
@@ -33,22 +32,34 @@ namespace ConsolePL
                 {
                     InvoiceBL ibl = new InvoiceBL();
                     invoice = ibl.GetInvoiceById(new Invoice { InvoiceNo = iNo });
-
                 }
             } while (iNo == 0);
 
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.WriteLine(invoice.InvoiceNo);
             Console.WriteLine(invoice.InvoiceSale.Name);
             Console.WriteLine(invoice.InvoiceAccountant.StaffId);
             Console.WriteLine(invoice.InvoiceCustomer.CustomerName);
             Console.WriteLine(invoice.LaptopList.Count);
             Console.WriteLine(invoice.InvoiceDate);
-
-            foreach(var l in invoice.LaptopList)
+            foreach (var l in invoice.LaptopList)
             {
                 Console.WriteLine(l.LaptopId);
 
             }
+
+            // Console.Write("Update Quanity: ");
+            // int qua = SupProgram.CheckChoice(Console.ReadLine());
+            // if (qua == 0)
+            // {
+            //     Console.WriteLine("Quanity is invalid !");
+            // }
+            // else
+            // {
+
+            // }
+
+
             Console.ReadKey();
 
         }
@@ -144,14 +155,15 @@ namespace ConsolePL
                 Console.WriteLine("|        LAPTOP SHOP T&G         |");
                 Console.WriteLine("|        Accountant Menu         |");
                 Console.WriteLine("==================================");
-                Console.WriteLine("1. PAY");
-                Console.WriteLine("2. EXIT");
+                Console.WriteLine("1. PAY                           |");
+                Console.WriteLine("2. EXIT                          |");
                 Console.WriteLine("==================================");
-                Console.WriteLine(" # YOUR CHOICE: ");
+                Console.Write(" # YOUR CHOICE: ");
                 choice = SupProgram.CheckChoice(Console.ReadLine());
                 switch (choice)
                 {
                     case 1:
+                        ConfirmPay();
                         break;
                     case 2:
                         Environment.Exit(0);
@@ -457,12 +469,10 @@ namespace ConsolePL
 
                 for (int i = 1; i < 15; ++i)
                 {
-
                     Laptop i_laptop = new Laptop() { LaptopId = i };
                     i_laptop = lbl.GetLaptop(i_laptop);
                     i_laptop.Quanity = 2;
                     invoice.LaptopList.Add(i_laptop);
-
                 }
                 Invoice invoice1;
                 bool result = ibl.CreateInvoice(invoice, out invoice1);
@@ -776,7 +786,6 @@ namespace ConsolePL
                 Console.WriteLine(" Battery        : " + laptop.Battery);
                 Console.WriteLine(" Weight         : " + laptop.Weight);
                 Console.WriteLine(" Warranty Period: " + laptop.WarrantyPeriod);
-
             }
 
             internal static int CheckChoice(string choice)
