@@ -9,7 +9,7 @@ namespace DALTest
         private LaptopDAL ldal = new LaptopDAL();
 
         [Theory]
-        [InlineData(3)]
+        [InlineData(1)]
 
         private void GetInvoice(int _no)
         {
@@ -17,7 +17,7 @@ namespace DALTest
             Invoice iv = idal.GetInvoiceById(new Invoice {InvoiceNo = _no});
 
             Assert.True(iv != null);
-            Assert.True(iv.LaptopList.Count == 14);
+            Assert.True(iv.LaptopList.Count == 2);
             Assert.True(iv.InvoiceNo == _no);
 
         }

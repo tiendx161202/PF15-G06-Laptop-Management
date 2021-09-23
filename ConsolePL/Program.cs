@@ -14,6 +14,37 @@ namespace ConsolePL
         {
             Login();
         }
+        
+        private static void DisplayInvoice(Invoice invoice)
+        {
+            
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            Console.Clear();
+            Console.WriteLine("======================================================");
+            Console.WriteLine("|\t INVOICE LAPTOP T&G                               |");
+            Console.WriteLine("======================================================");
+            Console.WriteLine("Invoice No: {0}",invoice.InvoiceNo);
+            Console.WriteLine("Invoice Creation Date: {0}",invoice.InvoiceDate);
+            Console.WriteLine("Name Sale:{0}",invoice.InvoiceSale.Name);
+            Console.WriteLine("Name Accountant: {0} ",invoice.InvoiceAccountant.StaffId);
+            Console.WriteLine("Customer:{0} ",invoice.InvoiceCustomer.CustomerName);
+            Console.WriteLine("Laoptop List:{0} ",invoice.LaptopList.Count);
+            Console.WriteLine("======================================================");
+            
+
+            String FormatText(string text,int with)
+            {
+                return text.Length > with ? text.Substring(0,with-3) +"...." :text;
+            }
+            var table = new ConsoleTable("ID","LAPTOP","PRICE");
+            IFormatProvider info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+            foreach (var l in invoice.LaptopList)
+            {
+                table.AddRow(l.LaptopId.ToString() , FormatText(l.Name,19) , string.Format(info, "{0:c}",l.Price));
+            }
+            table.Write(ConsoleTables.Format.Alternative);
+        }
 
         private static void ConfirmPay()
         {
@@ -35,18 +66,7 @@ namespace ConsolePL
                 }
             } while (iNo == 0);
 
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
-            Console.WriteLine(invoice.InvoiceNo);
-            Console.WriteLine(invoice.InvoiceSale.Name);
-            Console.WriteLine(invoice.InvoiceAccountant.StaffId);
-            Console.WriteLine(invoice.InvoiceCustomer.CustomerName);
-            Console.WriteLine(invoice.LaptopList.Count);
-            Console.WriteLine(invoice.InvoiceDate);
-            foreach (var l in invoice.LaptopList)
-            {
-                Console.WriteLine(l.LaptopId);
-
-            }
+            DisplayInvoice(invoice);
 
             // Console.Write("Update Quanity: ");
             // int qua = SupProgram.CheckChoice(Console.ReadLine());
