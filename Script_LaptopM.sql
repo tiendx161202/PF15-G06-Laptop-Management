@@ -11,9 +11,9 @@ CREATE TABLE STAFFS
 	StaffID int not null AUTO_INCREMENT,
     UserName VARCHAR(30),
     Password VARCHAR(100),
-    Name VARCHAR(50),
-    Phone VARCHAR(50),
-    Email VARCHAR(50),
+    StaffName VARCHAR(50),
+    StaffPhone VARCHAR(50),
+    StaffEmail VARCHAR(50),
     Role INT NOT NULL DEFAULT 1,
     PRIMARY KEY(STAFFID)
 );
@@ -21,9 +21,9 @@ CREATE TABLE STAFFS
 CREATE TABLE Customers
 (
 	Customerid INT NOT NULL AUTO_INCREMENT,
-    Name VARCHAR(100),
-    Phone VARCHAR(10),
-    Address VARCHAR(200),
+    CustomerName VARCHAR(100),
+    CustomerPhone VARCHAR(10),
+    CustomerAddress VARCHAR(200),
     PRIMARY KEY(Customerid)
 );
 
@@ -42,7 +42,7 @@ CREATE TABLE Laptops
 (
 	LaptopId INT NOT NULL AUTO_INCREMENT,
     BrandId int,
-    Name VARCHAR(500),
+    LaptopName VARCHAR(500),
     Price DECIMAL,
     CPU VARCHAR(500),
     RAM VARCHAR(500),
@@ -80,11 +80,11 @@ ALTER TABLE InvoiceDetails ADD CONSTRAINT fk_02 FOREIGN KEY (LaptopId) REFERENCE
 
 -- Create Procedure (ADD INVOICE)
 delimiter $$
-create procedure p_createInvoice(IN SaleId INT, IN CustomerId INT, IN Datetime DATETIME, IN Status INT, OUT InvoiceNo int)
-begin
+CREATE PROCEDURE p_createInvoice(IN SaleId INT, IN CustomerId INT, IN Datetime DATETIME, IN Status INT, OUT InvoiceNo int)
+BEGIN
 	INSERT INTO Invoices (saleId, customerid, datetime, status) VALUES (saleId, customerid, Datetime, status);
-	set InvoiceNo := last_insert_id();
-end $$
+	SET InvoiceNo := last_insert_id();
+END $$
 delimiter ;
 
 -- FK for Laptops
@@ -92,30 +92,26 @@ ALTER TABLE LAPTOPS ADD CONSTRAINT l_fk_01 FOREIGN KEY (brandId) REFERENCES Bran
 
 -- Create Procedure (ADD CUSTOMER)
 delimiter $$
-create procedure p_createCustomer(IN name varchar(100), IN Phone VARCHAR(10), IN Address varchar(200), OUT Customerid int)
-begin
-	insert into Customers(name, Phone, Address) values (Name, Phone, Address); 
+CREATE PROCEDURE p_createCustomer(IN name varchar(100), IN Phone VARCHAR(10), IN Address varchar(200), OUT Customerid int)
+BEGIN
+	INSERT INTO Customers(Customername, CustomerPhone, CustomerAddress) values (Name, Phone, Address); 
 -- 	select max(Customerid) from Customers;
-    set Customerid := last_insert_id();
-end $$
+    SET Customerid := last_insert_id();
+END $$
 delimiter ;
 
--- CALL sp_createCustomer('no name','any thing' ,'any where', @Customerid);
--- SELECT @Customerid; 
-
--- select *from Customers;
 
 -- Insert data to customer
-INSERT INTO Customers (customerId, Name, Phone, Address) VALUES (1, "Lê Huy Giang", "0981111111", "Thanh Hoa");
-INSERT INTO Customers (Name, Phone, Address) VALUES ("Lê Huy Hoàng", "098222222", "Thanh Hoá");
-INSERT INTO Customers (Name, Phone, Address) VALUES ("Lê Huy Khang", "098333333", "Thanh Hoá"),
+INSERT INTO Customers (customerId, customerName, customerPhone, customerAddress) VALUES (1, "Lê Huy Giang", "0981111111", "Thanh Hoa");
+INSERT INTO Customers (customerName, customerPhone, customerAddress) VALUES ("Lê Huy Hoàng", "098222222", "Thanh Hoá");
+INSERT INTO Customers (customerName, customerPhone, customerAddress) VALUES ("Lê Huy Khang", "098333333", "Thanh Hoá"),
 ("Đặng Xuân Tiến", "0987777777", "Cà Mau");
 
 -- Insert data to Staffs
-INSERT INTO Staffs (StaffId, UserName, Password, Name, Phone, Email, Role)
+INSERT INTO Staffs (StaffId, UserName, Password, StaffName, StaffPhone, StaffEmail, Role)
 	VALUES (1, "Giang1", "pGiang123", "Lê Huy Giang", "0981111111", "lhGiang@gmail.com", 1);
 
-INSERT INTO Staffs (UserName, Password, Name, Phone, Email, Role)
+INSERT INTO Staffs (UserName, Password, StaffName, StaffPhone, StaffEmail, Role)
 	VALUES  ("Tiendx1", "pTien321", "Đặng Xuân Tiến", "0981222222", "dxTien@gmail.com", 2),
 			("minhAnh1", "pMAnh445", "Phạm Minh Anh", "0987666543", "mAnh@gmail.com", 1),
             ("lkHuyen1", "pkHuyen12341", "Lữ Khánh Huyền", "0987554512", "lkHuyen@gmail.com", 2);
@@ -125,7 +121,7 @@ INSERT INTO Brands (BrandId, BrandName) VALUES (1, "ASUS");
 INSERT INTO Brands (BrandName) VALUES ("ACER"), ("DELL"), ("MSI"), ("LENOVO"), ("HP"), ("LG"), ("MacBook");
 
 -- Insert data to Laptops
-INSERT INTO Laptops (LaptopId, BrandId, Name, price, cpu, ram, harddisk, monitor, graphicscard, jack, os, battery, weight, warrantyperiod, stock)
+INSERT INTO Laptops (LaptopId, BrandId, LaptopName, price, cpu, ram, harddisk, monitor, graphicscard, jack, os, battery, weight, warrantyperiod, stock)
 	VALUES (1, 1, "Asus TUF Gaming FX506LH (HN002T)", 
     21490000, "i5 10300H 2.5GHz", 
     "8 GB, DDR4 2 khe (1 khe 8GB + 1 khe rời) 2933 MHz", 
@@ -140,7 +136,7 @@ INSERT INTO Laptops (LaptopId, BrandId, Name, price, cpu, ram, harddisk, monitor
     10
     );
 
-INSERT INTO Laptops (BrandId, Name, price, cpu, ram, harddisk, monitor, graphicscard, jack, os, battery, weight, warrantyperiod, stock)
+INSERT INTO Laptops (BrandId, LaptopName, price, cpu, ram, harddisk, monitor, graphicscard, jack, os, battery, weight, warrantyperiod, stock)
 	VALUES (3, "Dell Gaming G3 15 (P89F002BWH) ", 
     31990000, "i7 10750H 2.6GHz", 
     "16 GB, DDR4 2 khe (1 khe 8GB + 1 khe 8GB) 2933 MHz", 
