@@ -12,6 +12,7 @@ namespace ConsolePL
         private static Staff staff = new Staff();
         private static void Main(string[] args)
         {
+            ConfirmPay();
             Login();
         }
 
@@ -32,13 +33,19 @@ namespace ConsolePL
             Console.WriteLine("Customer Address:      {0}", invoice.InvoiceCustomer.CustomerAddress);
             Console.WriteLine("======================================================");
 
-            var table = new ConsoleTable("ID", "LAPTOP", "QUANITY", "PRICE");
+            decimal? total = 0;
+            int no = 0;
+            var table = new ConsoleTable("NO", "LAPTOP", "QUANITY", "PRICE");
             IFormatProvider info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
             foreach (var l in invoice.LaptopList)
             {
-                table.AddRow(l.LaptopId.ToString(), l.Name, l.Quanity, string.Format(info, "{0:c}", l.Price));
+                ++no;
+                table.AddRow(no.ToString(), l.Name, l.Quanity, string.Format(info, "{0:c}", l.Price));
+                total += l.Price * l.Quanity;
             }
-            table.Write(ConsoleTables.Format.Alternative); 
+            table.Write(ConsoleTables.Format.Alternative);
+            Console.WriteLine(string.Format(info, "Total invoice:  {0:c}", total));
+            Console.ReadKey();
         }
 
         private static void ConfirmPay()
@@ -61,20 +68,14 @@ namespace ConsolePL
                 }
             } while (iNo == 0);
 
-            if (invoice != null)
-                DisplayInvoice(invoice);
+            while (invoice == null)
+            {
+                Console.WriteLine("Cant find invoice - Re input...\n");
+                ConfirmPay();
+            }
+            DisplayInvoice(invoice);
 
-            // Console.Write("Update Quanity: ");
-            // int qua = SupProgram.CheckChoice(Console.ReadLine());
-            // if (qua == 0)
-            // {
-            //     Console.WriteLine("Quanity is invalid !");
-            // }
-            // else
-            // {
-
-            // }
-
+            
 
             Console.ReadKey();
 

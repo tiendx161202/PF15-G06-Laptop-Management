@@ -100,8 +100,7 @@ namespace DAL
                     MySqlDataReader reader = command.ExecuteReader();
                     if (!reader.Read())
                     {
-                        invoice = null;
-                        throw new Exception("Data empty ...");
+                        return invoice = null;
                     }
                     invoice = GetInvoice(reader);
                     reader.Close();
