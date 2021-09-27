@@ -21,7 +21,7 @@ namespace ConsolePL
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.Clear();
             Console.WriteLine("======================================================");
-            Console.WriteLine("|\t INVOICE LAPTOP T&G                           |");
+            Console.WriteLine("|\t INVOICE LAPTOP T&G                          |");
             Console.WriteLine("======================================================");
             Console.WriteLine("Invoice No:            {0}", invoice.InvoiceNo);
             Console.WriteLine("Invoice Creation Date: {0}", invoice.InvoiceDate);
@@ -43,6 +43,7 @@ namespace ConsolePL
 
         private static void ConfirmPay()
         {
+            //int choices;
             int iNo = 0;
             Invoice invoice = new Invoice();
             do
@@ -63,16 +64,14 @@ namespace ConsolePL
 
             if (invoice != null)
                 DisplayInvoice(invoice);
-
-            // Console.Write("Update Quanity: ");
-            // int qua = SupProgram.CheckChoice(Console.ReadLine());
-            // if (qua == 0)
+            
+            
+            // switch (choices)
             // {
-            //     Console.WriteLine("Quanity is invalid !");
-            // }
-            // else
-            // {
-
+            //     case 1:
+            //     break;
+            //     default:
+            //     break;
             // }
 
 
