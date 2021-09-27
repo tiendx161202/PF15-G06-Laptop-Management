@@ -34,14 +34,14 @@ namespace ConsolePL
             Console.WriteLine("======================================================");
 
             decimal? total = 0;
-            int no = 0;
             var table = new ConsoleTable("NO", "LAPTOP", "QUANITY", "PRICE");
             IFormatProvider info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
             foreach (var l in invoice.LaptopList)
             {
-                ++no;
+                int no = 1;
                 table.AddRow(no.ToString(), l.Name, l.Quanity, string.Format(info, "{0:c}", l.Price));
-                total += l.Price * l.Quanity;
+                total += l.Price;
+                no++;
             }
             table.Write(ConsoleTables.Format.Alternative);
             Console.WriteLine(string.Format(info, "Total invoice:  {0:c}", total));
@@ -75,7 +75,25 @@ namespace ConsolePL
             }
             DisplayInvoice(invoice);
 
-            
+            while (true)
+            {
+                Console.Write("Are you sure to confirm this invoice? (Y/N): ");
+                string choice = Console.ReadLine().ToUpper();
+                switch (choice)
+                {
+                    case "Y":
+                        Console.WriteLine("CHOICE YES");
+                        break;
+                    case "N":
+                        Console.WriteLine("CHOICE NO");
+                        break;
+                    default:
+                        Console.WriteLine("Invalid choice - Re choice");
+                        continue;
+                }
+                break;
+            } 
+            Console.WriteLine("HHHHHHHHHHHHHHHHH");
 
             Console.ReadKey();
 
@@ -114,7 +132,7 @@ namespace ConsolePL
                         Console.ReadLine();
                         break;
                 }
-            } while (true);
+            } while (choice == 0);
 
         }
 
@@ -159,7 +177,7 @@ namespace ConsolePL
                         Console.ReadLine();
                         break;
                 }
-            } while (choice != 5);
+            } while (choice == 0);
         }
 
         private static void AccountantMenu()
@@ -191,7 +209,7 @@ namespace ConsolePL
                         Console.ReadLine();
                         break;
                 }
-            } while (choice != 2);
+            } while (choice == 2);
         }
 
         private static void SaleMenu()
@@ -230,7 +248,7 @@ namespace ConsolePL
                         Console.ReadLine();
                         break;
                 }
-            } while (choice != 3);
+            } while (choice == 0);
         }
 
         private static void Login()
