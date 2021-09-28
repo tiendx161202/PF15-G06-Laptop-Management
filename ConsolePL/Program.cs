@@ -33,15 +33,24 @@ namespace ConsolePL
             Console.WriteLine("Customer Address:      {0}", invoice.InvoiceCustomer.CustomerAddress);
             Console.WriteLine("======================================================");
 
+<<<<<<< HEAD
             double total = 0;
             int no = 0;
+=======
+            decimal? total = 0;
+>>>>>>> fd40e838b7529a0b5e89bfa557ef53fba5f156c2
             var table = new ConsoleTable("NO", "LAPTOP", "QUANITY", "PRICE");
             IFormatProvider info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
             foreach (var l in invoice.LaptopList)
             {
-                ++no;
+                int no = 1;
                 table.AddRow(no.ToString(), l.Name, l.Quanity, string.Format(info, "{0:c}", l.Price));
+<<<<<<< HEAD
                 total +=(double) l.Price;
+=======
+                total += l.Price;
+                no++;
+>>>>>>> fd40e838b7529a0b5e89bfa557ef53fba5f156c2
             }
             table.Write(ConsoleTables.Format.Alternative);
             Console.WriteLine(string.Format(info, "Total invoice:  {0:c}", total));
@@ -78,6 +87,7 @@ namespace ConsolePL
             }
             DisplayInvoice(invoice);
 
+<<<<<<< HEAD
 
             Console.Write("Reconfirm the invoice !!! (Y/N): ");
             string choices =Console.ReadLine();
@@ -90,6 +100,27 @@ namespace ConsolePL
                 default:
                 break;
             }
+=======
+            while (true)
+            {
+                Console.Write("Are you sure to confirm this invoice? (Y/N): ");
+                string choice = Console.ReadLine().ToUpper();
+                switch (choice)
+                {
+                    case "Y":
+                        Console.WriteLine("CHOICE YES");
+                        break;
+                    case "N":
+                        Console.WriteLine("CHOICE NO");
+                        break;
+                    default:
+                        Console.WriteLine("Invalid choice - Re choice");
+                        continue;
+                }
+                break;
+            } 
+            Console.WriteLine("HHHHHHHHHHHHHHHHH");
+>>>>>>> fd40e838b7529a0b5e89bfa557ef53fba5f156c2
 
             Console.ReadKey();
 
@@ -128,7 +159,7 @@ namespace ConsolePL
                         Console.ReadLine();
                         break;
                 }
-            } while (true);
+            } while (choice == 0);
 
         }
 
@@ -173,7 +204,7 @@ namespace ConsolePL
                         Console.ReadLine();
                         break;
                 }
-            } while (choice != 5);
+            } while (choice == 0);
         }
 
         private static void AccountantMenu()
@@ -205,7 +236,7 @@ namespace ConsolePL
                         Console.ReadLine();
                         break;
                 }
-            } while (choice != 2);
+            } while (choice == 2);
         }
 
         private static void SaleMenu()
@@ -244,7 +275,7 @@ namespace ConsolePL
                         Console.ReadLine();
                         break;
                 }
-            } while (choice != 3);
+            } while (choice == 0);
         }
 
         private static void Login()
