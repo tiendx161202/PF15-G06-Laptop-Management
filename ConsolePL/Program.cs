@@ -12,6 +12,7 @@ namespace ConsolePL
         private static Staff staff = new Staff();
         private static void Main(string[] args)
         {
+            ConfirmPay();
             Login();
         }
 
@@ -32,18 +33,26 @@ namespace ConsolePL
             Console.WriteLine("Customer Address:      {0}", invoice.InvoiceCustomer.CustomerAddress);
             Console.WriteLine("======================================================");
 
-            var table = new ConsoleTable("ID", "LAPTOP", "QUANITY", "PRICE");
+            double total = 0;
+            int no = 0;
+            var table = new ConsoleTable("NO", "LAPTOP", "QUANITY", "PRICE");
             IFormatProvider info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
             foreach (var l in invoice.LaptopList)
             {
-                table.AddRow(l.LaptopId.ToString(), l.Name, l.Quanity, string.Format(info, "{0:c}", l.Price));
+                ++no;
+                table.AddRow(no.ToString(), l.Name, l.Quanity, string.Format(info, "{0:c}", l.Price));
+                total +=(double) l.Price;
             }
-            table.Write(ConsoleTables.Format.Alternative); 
+            table.Write(ConsoleTables.Format.Alternative);
+            Console.WriteLine(string.Format(info, "Total invoice:  {0:c}", total));
+            string totalmoney = IntroMoney(total);
+            Console.WriteLine("Into Money: " + totalmoney);
+            Console.ReadKey();
         }
 
         private static void ConfirmPay()
         {
-            //int choices;
+            
             int iNo = 0;
             Invoice invoice = new Invoice();
             do
@@ -62,18 +71,25 @@ namespace ConsolePL
                 }
             } while (iNo == 0);
 
-            if (invoice != null)
-                DisplayInvoice(invoice);
-            
-            
-            // switch (choices)
-            // {
-            //     case 1:
-            //     break;
-            //     default:
-            //     break;
-            // }
+            while (invoice == null)
+            {
+                Console.WriteLine("Cant find invoice - Re input...\n");
+                ConfirmPay();
+            }
+            DisplayInvoice(invoice);
 
+
+            Console.Write("Reconfirm the invoice !!! (Y/N): ");
+            string choices =Console.ReadLine();
+            switch (choices)
+            {
+                case "Y":
+                break;
+                case "N":
+                break;
+                default:
+                break;
+            }
 
             Console.ReadKey();
 
@@ -818,6 +834,90 @@ namespace ConsolePL
                 return menuChoice;
             }
 
+        }
+        public static string IntroMoney(double inputNumber, bool suffix = true)
+        {
+            string[] unitNumbers = new string[] { "KHÔNG", "MÔT", "HAI", "BA", "BỐN", "NĂM", "SÁU", "BẢY", "TÁM", "CHÍN" };
+            string[] placeValues = new string[] { "", "NGHÌN", "TRIỆU"};
+
+            // -12345678.3445435 => "-12345678"
+            string sNumber = inputNumber.ToString("#");
+            double number = Convert.ToDouble(sNumber);
+            if (number < 0)
+            {
+                number = -number;
+                sNumber = number.ToString();
+            }
+
+
+            int ones, tens, hundreds;
+
+            int positionDigit = sNumber.Length;   // last -> first
+
+            string result = " ";
+
+
+            if (positionDigit == 0)
+                result = unitNumbers[0] + result;
+            else
+            {
+                // 0:       ###
+                // 1: nghìn ###,###
+                // 2: triệu ###,###,###
+                // 3: tỷ    ###,###,###,###
+                int placeValue = 0;
+
+                while (positionDigit > 0)
+                {
+                    // Check last 3 digits remain ### (hundreds tens ones)
+                    tens = hundreds = -1;
+                    ones = Convert.ToInt32(sNumber.Substring(positionDigit - 1, 1));
+                    positionDigit--;
+                    if (positionDigit > 0)
+                    {
+                        tens = Convert.ToInt32(sNumber.Substring(positionDigit - 1, 1));
+                        positionDigit--;
+                        if (positionDigit > 0)
+                        {
+                            hundreds = Convert.ToInt32(sNumber.Substring(positionDigit - 1, 1));
+                            positionDigit--;
+                        }
+                    }
+
+                    if ((ones > 0) || (tens > 0) || (hundreds > 0) || (placeValue == 3))
+                        result = placeValues[placeValue] + result;
+
+                    placeValue++;
+                    if (placeValue > 3) placeValue = 1;
+
+                    if ((ones == 1) && (tens > 1))
+                        result = "MÔT " + result;
+                    else
+                    {
+                        if ((ones == 5) && (tens > 0))
+                            result = "LĂM " + result;
+                        else if (ones > 0)
+                            result = unitNumbers[ones] + " " + result;
+                    }
+                    if (tens < 0)
+                        break;
+                    else
+                    {
+                        if ((tens == 0) && (ones > 0)) result = "LẺ " + result;
+                        if (tens == 1) result = "MƯỜI " + result;
+                        if (tens > 1) result = unitNumbers[tens] + " MƯƠI " + result;
+                    }
+                    if (hundreds < 0) break;
+                    else
+                    {
+                        if ((hundreds > 0) || (tens > 0) || (ones > 0))
+                            result = unitNumbers[hundreds] + " TRĂM " + result;
+                    }
+                    result = " " + result;
+                }
+            }
+            result = result.Trim();
+            return result;
         }
 
     }
