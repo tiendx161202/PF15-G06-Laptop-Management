@@ -44,9 +44,9 @@ namespace ConsolePL
                 ++no;
                 table.AddRow(no.ToString(), l.Name, l.Quanity, string.Format(info, "{0:c}", l.Price));
 
-                total +=(double) l.Price;
+                total += (double)l.Price;
 
- 
+
             }
             table.Write(ConsoleTables.Format.Alternative);
             Console.WriteLine(string.Format(info, "Total invoice:  {0:c}", total));
@@ -57,7 +57,7 @@ namespace ConsolePL
 
         private static void ConfirmPay()
         {
-            
+
             int iNo = 0;
             Invoice invoice = new Invoice();
             do
@@ -101,7 +101,7 @@ namespace ConsolePL
                         continue;
                 }
                 break;
-            } 
+            }
             Console.WriteLine("HHHHHHHHHHHHHHHHH");
 
 
@@ -851,8 +851,8 @@ namespace ConsolePL
         }
         public static string IntroMoney(double inputNumber, bool suffix = true)
         {
-            string[] unitNumbers = new string[] { "KHÔNG", "MÔT", "HAI", "BA", "BỐN", "NĂM", "SÁU", "BẢY", "TÁM", "CHÍN" };
-            string[] placeValues = new string[] { "", "NGHÌN", "TRIỆU"};
+            string[] unitNumbers = new string[] { "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE" };
+            string[] placeValues = new string[] { "", "THOUSAND", "MILLON" };
 
             // -12345678.3445435 => "-12345678"
             string sNumber = inputNumber.ToString("#");
@@ -905,11 +905,11 @@ namespace ConsolePL
                     if (placeValue > 3) placeValue = 1;
 
                     if ((ones == 1) && (tens > 1))
-                        result = "MÔT " + result;
+                        result = "ONE " + result;
                     else
                     {
                         if ((ones == 5) && (tens > 0))
-                            result = "LĂM " + result;
+                            result = "FIVE " + result;
                         else if (ones > 0)
                             result = unitNumbers[ones] + " " + result;
                     }
@@ -917,15 +917,14 @@ namespace ConsolePL
                         break;
                     else
                     {
-                        if ((tens == 0) && (ones > 0)) result = "LẺ " + result;
-                        if (tens == 1) result = "MƯỜI " + result;
-                        if (tens > 1) result = unitNumbers[tens] + " MƯƠI " + result;
+                        if (tens == 1) result = "TEN " + result;
+                        if (tens > 1) result = unitNumbers[tens] + "TY " + result;
                     }
                     if (hundreds < 0) break;
                     else
                     {
                         if ((hundreds > 0) || (tens > 0) || (ones > 0))
-                            result = unitNumbers[hundreds] + " TRĂM " + result;
+                            result = unitNumbers[hundreds] + " HUNDRED " + result;
                     }
                     result = " " + result;
                 }
