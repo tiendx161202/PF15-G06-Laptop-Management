@@ -260,37 +260,59 @@ namespace ConsolePL
             } while (choice == 0);
         }
 
+        private static void Heading(string menu)
+        {
+            const int WIDTH_CONSOLE = 86;
+            Console.Clear();
+            Console.WriteLine(new string('=', WIDTH_CONSOLE+2));
+            logo();
+            Console.WriteLine("{0} {1,86}", "|", "|");
+            Console.WriteLine("| {0," + placeHolder(menu) + "}{1," + placeHolder2(menu) + "}", menu, "|");
+            Console.WriteLine(new string('=', WIDTH_CONSOLE+2));
+
+            void logo()
+            {
+                using (System.IO.FileStream fs = new System.IO.FileStream(@"logo.txt", System.IO.FileMode.Open, System.IO.FileAccess.Read))
+                {
+                    using (System.IO.StreamReader sr = new System.IO.StreamReader(fs))
+                    {
+                        while (!sr.EndOfStream)
+                        {
+                            Console.WriteLine("| {0,3} |", sr.ReadLine());
+                        }
+                    }
+                }
+            }
+
+            int placeHolder2(string menu)
+            {
+                int count = menu.Length;
+                int split = count % 2 == 0 ? count / 2 : count / 2 + 1;
+                int place = WIDTH_CONSOLE-(WIDTH_CONSOLE/2 + split);
+                // Console.WriteLine(count);    
+                return place;
+            }
+
+            int placeHolder(string a)
+            {
+                int count = a.Length;
+                int split = count % 2 == 0 ? count / 2 : count / 2 + 1;
+                int place = WIDTH_CONSOLE/2 + split;
+                // Console.WriteLine(count);    
+                return place;
+            }
+
+        }
+
         private static void Login()
         {
             StaffBL sbl = new StaffBL();
-
             while (true)
             {
                 if (staff == null)
                     staff = new Staff();
 
-                Console.Clear();
-                // Console.WriteLine(new string('=', 36));
-                // Console.WriteLine("{0}");
-                // Console.WriteLine(new string('=', 36));
-                void logo()
-                {
-                    using (System.IO.FileStream fs = new System.IO.FileStream(@"logo.txt", System.IO.FileMode.Open, System.IO.FileAccess.Read))
-                    {
-                        using (System.IO.StreamReader sr = new System.IO.StreamReader(fs))
-                        {
-                            while (!sr.EndOfStream)
-                            {
-                                Console.WriteLine(sr.ReadLine());
-                            }
-                        }
-                    }
-                }
-                Console.WriteLine("=================================");
-                logo();
-                // Console.WriteLine("|       LAPTOP MANAGEMENT       |");
-                // Console.WriteLine("|       Login                   |");
-                Console.WriteLine("=================================");
+                Heading("LOGIN TO SYSTEM");
 
                 string _UserName = SupProgram.InputUserName(sbl);
                 string _Password = SupProgram.InputPassword(sbl);
@@ -325,6 +347,7 @@ namespace ConsolePL
                     }
                 }
             }
+
         }
 
         static class SupProgram
@@ -363,79 +386,83 @@ namespace ConsolePL
                 Console.ReadKey();
             }
 
-            internal static void ChoiceAfterShowList(List<Laptop> Pglist)
+            internal static int ChoiceAfterShowList(List<Laptop> Pglist)
             {
-                int idChoice;
-                bool ans = false;
+                int idChoice = 0;
+                // bool ans = false;
 
-                do
+                while (true)
                 {
-                    Console.Write("Input ID Laptop to show details: ");
-                    idChoice = SupProgram.CheckChoice(Console.ReadLine());
-
-                    if (idChoice == 0)
+                    Console.Write("\nInput:  N to go to next page\n\tP to go to prev page\n\tLaptop Id to show more information\n\t0 to exit #Your Choice: ");
+                    string choice = Console.ReadLine().ToUpper();
+                    if (choice == "N")
                     {
-                        Console.WriteLine("Error ID, re input ...");
+                        idChoice = -1;
                     }
-                    else if (idChoice != 0)
+                    else if (choice == "P")
                     {
-                        foreach (var lap in Pglist)
-                        {
-                            if (lap.LaptopId == idChoice)
-                            {
-                                ans = true;
-                                break;
-                            }
-                            else
-                            {
-                                ans = false;
-                            }
-                        }
-
-                        if (ans)
-                        {
-                            Laptop lt = new Laptop() { LaptopId = idChoice };
-                            int index = Pglist.IndexOf(lt);
-                            SupProgram.DisplayLaptopInfo(Pglist[index]);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Error not exists in page, re input ...");
-                        }
+                        idChoice = -2;
                     }
-                } while (idChoice == 0);
+                    else if (CheckChoice(choice) != 0)
+                    {
+                        idChoice = Convert.ToInt32(choice);
+                    }
 
-
+                    return idChoice;
+                }
             }
 
             internal static void GotoPage(List<Laptop> LaptopList, Laptop laptop, string resString)
             {
                 int page = 1;
                 int count = LaptopList.Count;
+                int idChoice;
                 double resPage = count % 10 > 0 ? count / 10 + 1 : count / 10;
 
                 List<Laptop> Pglist = null;
-
-                if (resPage == 1)
+                while (true)
                 {
                     Pglist = SupProgram.DisplayLaptopList(LaptopList, laptop, page, resString);
                     Console.WriteLine(" PAGE {0}", page);
-                }
-                else if (resPage > 1)
-                {
-                    do
-                    {
-                        Pglist = SupProgram.DisplayLaptopList(LaptopList, laptop, page, resString);
-                        Console.WriteLine(" PAGE {0}", page);
-                        do
-                        {
-                            Console.Write("Input 0 to exit next page or your page choice: ");
-                            page = SupProgram.CheckChoice(Console.ReadLine());
-                        } while (page > resPage || page < 0);
-                    } while (page != 0);
+                    idChoice = ChoiceAfterShowList(Pglist);
 
+                    if (idChoice == -1)
+                    {
+                        if (page < resPage || page > 0)
+                        {
+                            page++;
+                        }
+                    }
+                    else if (idChoice == -2)
+                    {
+                        if (page <= resPage || page > 0)
+                        {
+                            page--;
+                        }
+                    }
+                    else if (idChoice == 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            LaptopBL lbl = new LaptopBL();
+                            Laptop lt = new Laptop() { LaptopId = idChoice };
+                            int index = Pglist.IndexOf(lt);
+                            SupProgram.DisplayLaptopInfo(Pglist[index]);
+                            Console.ReadKey();
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Laptop not exist in page !");
+                            Console.ReadKey();
+                            continue;
+                        }
+                    }
                 }
-                ChoiceAfterShowList(Pglist);
+                SearchMenu();
             }
 
             internal static void CreateNewInvoice()
