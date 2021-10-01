@@ -70,7 +70,6 @@ namespace DAL
             return result;
         }
 
-
         public Invoice GetInvoiceByPhone(Invoice invoice)
         {
             lock (connection)
