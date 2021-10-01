@@ -17,11 +17,43 @@ namespace DAL
             }
         }
 
+        public Customer GetCustomerByPhone(Customer cus)
+        {
+            lock (connection)
+            {
+                if (connection.State == System.Data.ConnectionState.Closed)
+                {
+                    connection.Open();
+                }
+                MySqlCommand command = connection.CreateCommand();
+
+                query = @"SELECT * FROM Customers WHERE CustomerPhone = @Phone;";
+                command.Parameters.AddWithValue("@Phone", cus.CustomerPhone);
+                command.CommandText = query;
+
+                reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    cus = GetCustomer(reader);
+                }
+                else
+                {
+                    cus = null;
+                }
+                reader.Close();
+                connection.Close();
+                return cus;
+            }
+        }
+
         public Customer GetCustomerById(Customer cus)
         {
             lock (connection)
             {
-                connection.Open();
+                if (connection.State == System.Data.ConnectionState.Closed)
+                {
+                    connection.Open();
+                }
                 MySqlCommand command = connection.CreateCommand();
 
                 query = @"SELECT * FROM Customers WHERE Customerid = @id;";
@@ -53,46 +85,84 @@ namespace DAL
             return cus;
         }
 
-        public int? AddCustomer(Customer cus)
+        public bool AddCustomer(Customer cus)
         {
+            bool result = true;
+            Customer check_custommer = GetCustomerByPhone(cus);
+            if (check_custommer != null)
+            {
+                return UpdateCustomer(cus);
+            }
+            else
+            {
+                lock (connection)
+                {
+                    if (connection.State == System.Data.ConnectionState.Closed)
+                    {
+                        connection.Open();
+                    }
+                    MySqlCommand cmd = new MySqlCommand("p_createCustomer", connection);
+
+                    try
+                    {
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                        cmd.Parameters.AddWithValue("@Name", cus.CustomerName);
+                        cmd.Parameters["@Name"].Direction = System.Data.ParameterDirection.Input;
+
+                        cmd.Parameters.AddWithValue("@Phone", cus.CustomerPhone);
+                        cmd.Parameters["@Phone"].Direction = System.Data.ParameterDirection.Input;
+
+                        cmd.Parameters.AddWithValue("@Address", cus.CustomerAddress);
+                        cmd.Parameters["@Address"].Direction = System.Data.ParameterDirection.Input;
+
+                        cmd.Parameters.AddWithValue("@Customerid", MySqlDbType.Int32);
+                        cmd.Parameters["@Customerid"].Direction = System.Data.ParameterDirection.Output;
+                        cmd.ExecuteNonQuery();
+
+                    }
+                    catch
+                    {
+                        result = false;
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                    return result;
+                }
+            }
+        }
+
+        public bool UpdateCustomer(Customer cus)
+        {
+            bool result = true;
             lock (connection)
             {
-                int? result = null;
-                if (connection.State == System.Data.ConnectionState.Closed)
-                {
-                    connection.Open();
-                }
-                MySqlCommand cmd = new MySqlCommand("p_createCustomer", connection);
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
 
                 try
                 {
-                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
-
-                    cmd.Parameters.AddWithValue("@Name", cus.CustomerName);
-                    cmd.Parameters["@Name"].Direction = System.Data.ParameterDirection.Input;
-
-                    cmd.Parameters.AddWithValue("@Phone", cus.CustomerPhone);
-                    cmd.Parameters["@Phone"].Direction = System.Data.ParameterDirection.Input;
-
-                    cmd.Parameters.AddWithValue("@Address", cus.CustomerAddress);
-                    cmd.Parameters["@Address"].Direction = System.Data.ParameterDirection.Input;
-
-                    cmd.Parameters.AddWithValue("@Customerid", MySqlDbType.Int32);
-                    cmd.Parameters["@Customerid"].Direction = System.Data.ParameterDirection.Output;
-                    cmd.ExecuteNonQuery();
-
-                    result = (int)cmd.Parameters["@CustomerId"].Value;
-
+                    query = @"UPDATE Customers SET Customername = @Name, CustomerAddress = @Address WHERE customerphone = @Phone;";
+                    command.Parameters.AddWithValue("@Name", cus.CustomerName);
+                    command.Parameters.AddWithValue("@Address", cus.CustomerAddress);
+                    command.Parameters.AddWithValue("@Phone", cus.CustomerPhone);
+                    command.CommandText = query;
+                    command.ExecuteNonQuery();
                 }
                 catch
                 {
+                    result = false;
                 }
                 finally
                 {
                     connection.Close();
                 }
+
                 return result;
             }
         }
+
     }
 }

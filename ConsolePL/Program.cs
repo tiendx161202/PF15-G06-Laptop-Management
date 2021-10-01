@@ -12,12 +12,16 @@ namespace ConsolePL
         private static Staff staff = new Staff();
         private static void Main(string[] args)
         {
-            ConfirmPay();
             Login();
         }
 
         private static void DisplayInvoice(Invoice invoice)
         {
+            if (invoice.LaptopList == null && invoice.Status == InvoiceStatus.NEW_INVOICE)
+            {
+                InvoiceBL ibl = new InvoiceBL();
+                invoice = ibl.GetInvoiceById(invoice);
+            }
 
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.Clear();
@@ -36,15 +40,15 @@ namespace ConsolePL
             decimal? total = 0;
             var table = new ConsoleTable("NO", "LAPTOP", "QUANITY", "PRICE");
             IFormatProvider info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+
             foreach (var l in invoice.LaptopList)
             {
-                int no = 1;
+                int no = invoice.LaptopList.IndexOf(l) + 1;
                 table.AddRow(no.ToString(), l.Name, l.Quanity, string.Format(info, "{0:c}", l.Price));
                 total += l.Price;
-                no++;
             }
             table.Write(ConsoleTables.Format.Alternative);
-            Console.WriteLine(string.Format(info, "Total invoice:  {0:c}", total));
+            Console.WriteLine(string.Format(info, "Total invoice: {0:c}", total));
             Console.ReadKey();
         }
 
@@ -70,7 +74,7 @@ namespace ConsolePL
 
             while (invoice == null)
             {
-                Console.WriteLine("Cant find invoice - Re input...\n");
+                Console.WriteLine("Can't find invoice - Re input...\n");
                 ConfirmPay();
             }
             DisplayInvoice(invoice);
@@ -92,7 +96,7 @@ namespace ConsolePL
                         continue;
                 }
                 break;
-            } 
+            }
             Console.WriteLine("HHHHHHHHHHHHHHHHH");
 
             Console.ReadKey();
@@ -239,7 +243,6 @@ namespace ConsolePL
                         InvoiceMenu();
                         break;
                     case 3:
-                        staff = null;
                         Login();
                         break;
                     default:
@@ -255,113 +258,70 @@ namespace ConsolePL
         {
             StaffBL sbl = new StaffBL();
 
-            Console.Clear();
-            // Console.WriteLine(new string('=', 36));
-            // Console.WriteLine("{0}");
-            // Console.WriteLine(new string('=', 36));
-
-            Console.WriteLine("=================================");
-            Console.WriteLine("|       LAPTOP MANAGEMENT       |");
-            Console.WriteLine("|       Login                   |");
-            Console.WriteLine("=================================");
-
-            string _UserName = InputUserName(sbl);
-            string _Password = InputPassword(sbl);
-
-            staff.UserName = _UserName;
-            staff.Password = _Password;
-            staff = sbl.Login(staff);
-
-            if (staff == null)
+            while (true)
             {
-                Console.WriteLine("User Name or Password is wrong!\nPress EnterKey to re-login or any key to Exit!");
-                var key = Console.ReadKey();
-                if (key.Key == ConsoleKey.Enter)
-                {
-                    Login();
-                }
-                Environment.Exit(0);
-            }
-            else
-            {
-                staff.UserName = null; staff.Password = null;
-                if (staff.Role == staff.ROLE_SALE)
-                {
-                    SaleMenu();
-                }
-                else if (staff.Role == staff.ROLE_ACCOUNTANT)
-                {
-                    AccountantMenu();
-                }
-            }
+                if (staff == null)
+                    staff = new Staff();
 
-            static string InputUserName(StaffBL sbl)
-            {
-                string ErrorMessage;
-                string userName;
-                do
+                Console.Clear();
+                // Console.WriteLine(new string('=', 36));
+                // Console.WriteLine("{0}");
+                // Console.WriteLine(new string('=', 36));
+                void logo()
                 {
-                    Console.Write("\nUser Name: ");
-                    userName = Console.ReadLine();
-                    sbl.ValidateUserName(userName, out ErrorMessage);
-
-                    if (ErrorMessage != null)
+                    using (System.IO.FileStream fs = new System.IO.FileStream(@"logo.txt", System.IO.FileMode.Open, System.IO.FileAccess.Read))
                     {
-                        Console.WriteLine(ErrorMessage);
+                        using (System.IO.StreamReader sr = new System.IO.StreamReader(fs))
+                        {
+                            while (!sr.EndOfStream)
+                            {
+                                Console.WriteLine(sr.ReadLine());
+                            }
+                        }
                     }
                 }
-                while (sbl.ValidateUserName(userName, out ErrorMessage) == false);
+                Console.WriteLine("=================================");
+                logo();
+                // Console.WriteLine("|       LAPTOP MANAGEMENT       |");
+                // Console.WriteLine("|       Login                   |");
+                Console.WriteLine("=================================");
 
-                return userName;
-            }
+                string _UserName = SupProgram.InputUserName(sbl);
+                string _Password = SupProgram.InputPassword(sbl);
 
-            static string InputPassword(StaffBL sbl)
-            {
-                string Password;
-                string ErrorMessage;
+                if (_UserName != null)
+                    staff.UserName = _UserName;
+                if (_Password != null)
+                    staff.Password = _Password;
 
-                do
+                staff = sbl.Login(staff);
+
+                if (staff == null)
                 {
-                    Console.Write("Password: ");
-                    Password = HidePassword();
-                    sbl.ValidatePassword(Password, out ErrorMessage);
-
-                    if (ErrorMessage != null)
+                    Console.WriteLine("User Name or Password is wrong!\nPress EnterKey to re-login or any key to Exit!");
+                    var key = Console.ReadKey();
+                    if (key.Key == ConsoleKey.Enter)
                     {
-                        Console.WriteLine("\n" + ErrorMessage);
+                        continue;
                     }
-                    Console.WriteLine();
-                } while (sbl.ValidatePassword(Password, out ErrorMessage) == false);
-
-                return Password;
-            }
-
-            static string HidePassword()
-            {
-                var pass = string.Empty;
-                ConsoleKey key;
-                do
+                    Environment.Exit(0);
+                }
+                else
                 {
-                    var keyInfo = Console.ReadKey(intercept: true);
-                    key = keyInfo.Key;
-
-                    if (key == ConsoleKey.Backspace && pass.Length > 0)
+                    staff.UserName = null; staff.Password = null;
+                    if (staff.Role == staff.ROLE_SALE)
                     {
-                        Console.Write("\b \b");
-                        pass = pass[0..^1];
+                        SaleMenu();
                     }
-                    else if (!char.IsControl(keyInfo.KeyChar))
+                    else if (staff.Role == staff.ROLE_ACCOUNTANT)
                     {
-                        Console.Write("*");
-                        pass += keyInfo.KeyChar;
+                        AccountantMenu();
                     }
-                } while (key != ConsoleKey.Enter);
-                return pass;
+                }
             }
-
         }
 
-        internal static class SupProgram
+        static class SupProgram
         {
             internal static void GetByLaptopIdOrder()
             {
@@ -379,7 +339,7 @@ namespace ConsolePL
                 while (_LaptopId == 0);
                 LaptopBL lbl1 = new LaptopBL();
                 Laptop laptop = new Laptop() { LaptopId = _LaptopId };
-                laptop = lbl1.GetLaptop(laptop);
+                laptop = lbl1.GetLaptopById(laptop);
                 var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
                 if (laptop.Status == Laptop.LaptopStatus.NOT_FOUND)
                 {
@@ -477,6 +437,7 @@ namespace ConsolePL
                 CustomerBL cbl = new CustomerBL();
                 LaptopBL lbl = new LaptopBL();
                 InvoiceBL ibl = new InvoiceBL();
+                Customer i_customer = new Customer();
 
                 Staff i_sale = null;
                 Staff i_acccountant = null;
@@ -490,59 +451,207 @@ namespace ConsolePL
                     i_acccountant = staff;
                 }
 
-                Console.Write("Cus Name: ");
-                string _name = Console.ReadLine();
-                Console.Write("Cus Phone: ");
-                string _phone = Console.ReadLine();
-                Console.Write("Cus Add: ");
-                string _add = Console.ReadLine();
-
-                Customer i_customer = new Customer() { CustomerName = _name, CustomerPhone = _phone, CustomerAddress = _add };
-                i_customer.CustomerId = cbl.AddCustomer(i_customer);
+                i_customer = InputCustomer(cbl);
+                cbl.AddCustomer(i_customer);
 
                 Invoice invoice = new Invoice() { InvoiceSale = i_sale, InvoiceAccountant = i_acccountant, InvoiceCustomer = i_customer, InvoiceDate = DateTime.Now };
+                Laptop i_laptop = new Laptop();
 
-                for (int i = 1; i < 15; ++i)
+                while (true)
                 {
-                    Laptop i_laptop = new Laptop() { LaptopId = i };
-                    i_laptop = lbl.GetLaptop(i_laptop);
-                    i_laptop.Quanity = 2;
-                    invoice.LaptopList.Add(i_laptop);
+                    i_laptop = AddLaptopToInvoice(lbl);
+                    if (i_laptop == null)
+                    {
+                        break;
+                    }
+
+                    if (invoice.LaptopList != null)
+                    {
+                        for (int i = 0; i < invoice.LaptopList.Count(); i++)
+                        {
+                            var list = invoice.LaptopList.ToList();
+                            Laptop l = list[i];
+
+                            if (l.LaptopId == i_laptop.LaptopId)
+                            {
+                                l.Quanity += i_laptop.Quanity;
+                                break;
+                            }
+
+                        }
+                    }
+
+                    if (!invoice.LaptopList.Contains(i_laptop))
+                    {
+                        invoice.LaptopList.Add(i_laptop);
+                    }
                 }
+
                 Invoice invoice1;
                 bool result = ibl.CreateInvoice(invoice, out invoice1);
-
                 if (result)
                 {
-                    Console.WriteLine("Create Complete! Your Invoice No. is " + invoice1.InvoiceNo);
+                    DisplayInvoice(invoice1);
                 }
                 else
                 {
-                    Console.WriteLine("Create Fail!");
+                    Console.WriteLine("Create invoice Fail, back to menu ...");
                 }
-
-                // Console.WriteLine(invoice1.InvoiceCustomer.CustomerName);
-                // Console.WriteLine(invoice1.InvoiceSale.Name);
-
                 Console.ReadKey();
+                InvoiceMenu();
             }
 
-            internal static void AddCustomer()
+            internal static Laptop AddLaptopToInvoice(LaptopBL lbl)
             {
-                CustomerBL cbl = new CustomerBL();
-                Console.Write("Name: ");
-                string _name = Console.ReadLine();
-                Console.Write("Add: ");
-                string _add = Console.ReadLine();
-                Console.Write("Phone: ");
-                string _phone = Console.ReadLine();
+                Laptop i_laptop = new Laptop();
+                while (true)
+                {
+                    int _LaptopId;
+                    Console.Write("\nInput Laptop ID add to invoice or 0 to exit: ");
+                    _LaptopId = checkId(Console.ReadLine());
+                    if (_LaptopId == -1)
+                    {
+                        Console.WriteLine("Invalid ID, ID must be a number!");
+                        continue;
+                    }
+                    else if (_LaptopId == 0)
+                    {
+                        return null;
+                    }
 
-                Customer customer = new Customer() { CustomerName = _name, CustomerAddress = _add, CustomerPhone = _phone };
-                int? _id = cbl.AddCustomer(customer);
-                customer.CustomerId = _id;
+                    i_laptop = lbl.GetLaptopById(new Laptop { LaptopId = _LaptopId });
 
-                Console.WriteLine("Add customer complete, id is: {0}", _id);
-                Console.ReadKey();
+                    if (i_laptop == null)
+                    {
+                        Console.WriteLine("Can't find this laptop!\n");
+                        continue;
+                    }
+
+                    IFormatProvider info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+                    Console.OutputEncoding = System.Text.Encoding.UTF8;
+                    Console.WriteLine("Laptop Name:  {0}", i_laptop.Name);
+                    Console.WriteLine(string.Format(info, "Laptop Price {0:c}", i_laptop.Price));
+                    while (true)
+                    {
+                        int _quanity;
+                        Console.Write("\nInput quanity add to invoice, or input 0 to exit: ");
+
+                        try
+                        { _quanity = Convert.ToInt32(Console.ReadLine()); }
+                        catch { _quanity = -1; }
+
+                        if (_quanity > i_laptop.Stock)
+                        {
+                            Console.WriteLine("Sorry, not enough stock !!\nIts less than {0} !!", i_laptop.Stock);
+                            continue;
+                        }
+
+                        if (_quanity == -1)
+                        {
+                            Console.WriteLine("Your input is invalid, re input ...");
+                            continue;
+                        }
+                        if (_quanity == 0)
+                        {
+                            return null;
+                        }
+                        else if (_quanity > 0)
+                        {
+                            i_laptop.Quanity = _quanity;
+                            break;
+                        }
+                        break;
+                    }
+                    break;
+                }
+
+                int checkId(string id)
+                {
+                    int res;
+                    try
+                    {
+                        res = Convert.ToInt32(id);
+                    }
+                    catch
+                    {
+                        res = -1;
+                    }
+                    return res;
+                }
+
+                return i_laptop;
+            }
+
+            internal static Customer InputCustomer(CustomerBL cbl)
+            {
+                Customer a_customer = new Customer();
+                string _phone;
+
+                while (true)
+                {
+                    Console.Write("\nCustomer Phone: ");
+                    _phone = Console.ReadLine();
+                    if (_phone != null || !string.IsNullOrWhiteSpace(_phone) || !string.IsNullOrWhiteSpace(_phone))
+                    {
+                        a_customer = cbl.GetCustomerByPhone(new Customer { CustomerPhone = _phone });
+                        if (a_customer != null)
+                        {
+                            while (true)
+                            {
+                                Console.WriteLine("Customer Name:    {0}", a_customer.CustomerName);
+                                Console.WriteLine("Customer Address: {0}", a_customer.CustomerAddress);
+                                Console.Write("\nIs that you? (Y/N): ");
+                                string choice2 = Console.ReadLine().ToUpper();
+                                if (choice2 == "N")
+                                {
+                                    Console.Write("\nIs that your phone number? (Y/N): ");
+                                    string choice3 = Console.ReadLine().ToUpper();
+                                    switch (choice3)
+                                    {
+                                        case "Y":
+                                            Console.Write("Customer Name: ");
+                                            a_customer.CustomerName = Console.ReadLine();
+                                            Console.Write("Customer Add: ");
+                                            a_customer.CustomerAddress = Console.ReadLine();
+                                            break;
+                                        case "N":
+                                            InputCustomer(cbl);
+                                            break;
+                                        default:
+                                            Console.WriteLine("Invalid choice, please eneter Yes(Y) or No(N)!");
+                                            break;
+                                    }
+                                }
+                                else if (choice2 == "Y")
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Invalid choice, please eneter Yes(Y) or No(N)!");
+                                    continue;
+                                }
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            a_customer = new Customer();
+                            a_customer.CustomerPhone = _phone;
+                            Console.Write("Customer Name: ");
+                            a_customer.CustomerName = Console.ReadLine();
+                            Console.Write("Customer Add: ");
+                            a_customer.CustomerAddress = Console.ReadLine();
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Phone can't not be empty!");
+                        continue;
+                    }
+                }
+                return a_customer;
             }
 
             internal static void GetCustomer()
@@ -784,7 +893,7 @@ namespace ConsolePL
                 while (_LaptopId == 0);
 
                 Laptop laptop = new Laptop() { LaptopId = _LaptopId };
-                laptop = lbl.GetLaptop(laptop);
+                laptop = lbl.GetLaptopById(laptop);
 
                 if (laptop == null)
                 {
@@ -838,8 +947,70 @@ namespace ConsolePL
                 return menuChoice;
             }
 
+            internal static string InputUserName(StaffBL sbl)
+            {
+                string ErrorMessage;
+                string userName;
+                do
+                {
+                    Console.Write("\nUser Name: ");
+                    userName = Console.ReadLine();
+                    sbl.ValidateUserName(userName, out ErrorMessage);
+
+                    if (ErrorMessage != null)
+                    {
+                        Console.WriteLine(ErrorMessage);
+                    }
+                }
+                while (sbl.ValidateUserName(userName, out ErrorMessage) == false);
+
+                return userName;
+            }
+
+            internal static string InputPassword(StaffBL sbl)
+            {
+                string Password;
+                string ErrorMessage;
+
+                do
+                {
+                    Console.Write("Password: ");
+                    Password = HidePassword();
+                    sbl.ValidatePassword(Password, out ErrorMessage);
+
+                    if (ErrorMessage != null)
+                    {
+                        Console.WriteLine("\n" + ErrorMessage);
+                    }
+                    Console.WriteLine();
+                } while (sbl.ValidatePassword(Password, out ErrorMessage) == false);
+
+                return Password;
+            }
+
+            internal static string HidePassword()
+            {
+                var pass = string.Empty;
+                ConsoleKey key;
+                do
+                {
+                    var keyInfo = Console.ReadKey(intercept: true);
+                    key = keyInfo.Key;
+
+                    if (key == ConsoleKey.Backspace && pass.Length > 0)
+                    {
+                        Console.Write("\b \b");
+                        pass = pass[0..^1];
+                    }
+                    else if (!char.IsControl(keyInfo.KeyChar))
+                    {
+                        Console.Write("*");
+                        pass += keyInfo.KeyChar;
+                    }
+                } while (key != ConsoleKey.Enter);
+                return pass;
+            }
+
         }
-
     }
-
 }

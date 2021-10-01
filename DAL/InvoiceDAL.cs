@@ -72,6 +72,51 @@ namespace DAL
         }
 
 
+        public Invoice GetInvoiceByPhone(Invoice invoice)
+        {
+            lock (connection)
+            {
+                MySqlCommand command = connection.CreateCommand();
+                if (connection.State == System.Data.ConnectionState.Closed)
+                {
+                    connection.Open();
+                }
+
+                try
+                {
+                    if (invoice == null)
+                    {
+                        throw new Exception("Can't find invoice!");
+                    }
+
+                    command.CommandText = @"SELECT * FROM invoices i 
+                                            INNER JOIN invoicedetails d ON i.InvoiceNo = d.InvoiceNo 
+                                            INNER JOIN staffs s ON i.SaleId = s.StaffID OR i.AccountantId = s.StaffID 
+                                            INNER JOIN customers c ON i.Customerid = c.Customerid
+                                            INNER JOIN laptops l ON l.LaptopId = d.LaptopId
+                                            INNER JOIN brands b ON b.BrandId = l.BrandId
+                                            WHERE c.customerPhone = @Phone;";
+                    command.Parameters.AddWithValue("@Phone", invoice.InvoiceCustomer.CustomerPhone);
+                    MySqlDataReader reader = command.ExecuteReader();
+                    if (!reader.Read())
+                    {
+                        return invoice = null;
+                    }
+                    invoice = GetInvoice(reader);
+                    reader.Close();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+            return invoice;
+        }
+
         public Invoice GetInvoiceById(Invoice invoice)
         {
             lock (connection)
@@ -114,7 +159,6 @@ namespace DAL
                     connection.Close();
                 }
             }
-
             return invoice;
         }
 
@@ -171,6 +215,12 @@ namespace DAL
                 return false;
             }
 
+            if (invoice.InvoiceCustomer.CustomerId == null && invoice.InvoiceCustomer.CustomerPhone != null)
+            {
+                CustomerDAL cdal = new CustomerDAL();
+                invoice.InvoiceCustomer.CustomerId = cdal.GetCustomerByPhone(invoice.InvoiceCustomer).CustomerId;
+            }
+
             lock (connection)
             {
                 MySqlCommand command = connection.CreateCommand();
@@ -195,7 +245,7 @@ namespace DAL
 
                 try
                 {
-                    if (invoice.InvoiceCustomer == null || invoice.InvoiceCustomer.CustomerId == null)
+                    if (invoice.InvoiceCustomer == null)
                     {
                         throw new Exception("Can't find Customer!");
                     }
@@ -209,7 +259,7 @@ namespace DAL
                     command.Parameters["@CustomerId"].Direction = System.Data.ParameterDirection.Input;
                     command.Parameters.AddWithValue("@Datetime", invoice.InvoiceDate);
                     command.Parameters["@Datetime"].Direction = System.Data.ParameterDirection.Input;
-                    command.Parameters.AddWithValue("@Status", InvoiceStatus.CREATE_NEW_INVOICE);
+                    command.Parameters.AddWithValue("@Status", InvoiceStatus.NEW_INVOICE);
                     command.Parameters["@Status"].Direction = System.Data.ParameterDirection.Input;
                     command.Parameters.AddWithValue("@InvoiceNo", MySqlDbType.Int32);
                     command.Parameters["@InvoiceNo"].Direction = System.Data.ParameterDirection.Output;
@@ -220,7 +270,7 @@ namespace DAL
 
                     foreach (var laptop in invoice.LaptopList)
                     {
-                        if (laptop.LaptopId == null)
+                        if (laptop == null)
                         {
                             throw new Exception("Not Exists Laptop");
                         }

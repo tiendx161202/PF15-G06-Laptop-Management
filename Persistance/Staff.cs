@@ -4,7 +4,7 @@ namespace Persistance
 {
     public class Staff
     {
-        public int? StaffId { set; get; }
+        public int StaffId { set; get; }
         public string UserName { set; get; }
         public string Password { set; get; }
         public string Name { set; get; }

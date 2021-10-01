@@ -8,6 +8,10 @@ namespace BL
     {
         private InvoiceDAL idal = new InvoiceDAL(); 
 
+        public Invoice GetInvoiceByPhone(Invoice invoice)
+        {
+            return idal.GetInvoiceByPhone(invoice);
+        }
 
         public Invoice GetInvoiceById(Invoice invoice)
         {

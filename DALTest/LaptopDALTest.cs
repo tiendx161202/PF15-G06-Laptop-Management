@@ -29,7 +29,6 @@ namespace DALTest
         [InlineData(14, MATCH)]
         [InlineData(15, MATCH)]
         [InlineData(16, MATCH)]
-
         private void SearchIdTest(int _id, bool expected)
         {
             Laptop result = new Laptop() { LaptopId = _id };

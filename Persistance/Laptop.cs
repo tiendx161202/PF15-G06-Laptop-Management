@@ -4,7 +4,7 @@ namespace Persistance
 {
     public class Laptop
     {
-        public int? LaptopId { set; get; }
+        public int LaptopId { set; get; }
         public int BrandId { set; get; }
         public string BrandName { set; get; }
         public string Name { set; get; }
@@ -32,7 +32,7 @@ namespace Persistance
                 if (this.quanity < 0)
                     throw new Exception ("Quanity is invalid");
 
-                this.quanity = value ?? 1;
+                this.quanity = value ??  1;
             }
             get
             {

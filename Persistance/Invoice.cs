@@ -5,7 +5,10 @@ namespace Persistance
 {
     public static class InvoiceStatus
     {
-        public const int CREATE_NEW_INVOICE = 1;
+        public const int NEW_INVOICE = 1;
+        public const int PENDING_INVOICE = 2;
+        public const int COMPLETE_INVOICE = 3;
+        public const int CANCELED_INVOICE = 4;
     }
 
     public class Invoice

@@ -10,7 +10,6 @@ namespace DALTest
 
         [Theory]
         [InlineData(1)]
-
         private void GetInvoice(int _no)
         {
             InvoiceDAL idal = new InvoiceDAL();

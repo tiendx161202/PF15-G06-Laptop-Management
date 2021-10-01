@@ -12,7 +12,7 @@ namespace BL
         private LaptopDAL dal = new LaptopDAL();
         private LaptopsDAL sdal = new LaptopsDAL();
 
-        public Laptop GetLaptop(Laptop laptop)
+        public Laptop GetLaptopById(Laptop laptop)
         {
             return dal.GetLaptopById(laptop);
         }

@@ -101,6 +101,15 @@ END $$
 delimiter ;
 
 
+-- Overide Procedure (ADD CUSTOMER)
+-- delimiter $$
+-- CREATE PROCEDURE p_updateCustomer(IN name varchar(100), IN Phone VARCHAR(10), IN Address varchar(200), OUT Customerid int)
+-- BEGIN
+-- 	UPDATE Customers SET Customername = Name, CustomerAddress = Address WHERE customerphone = Phone;
+-- END $$
+-- delimiter ;
+
+
 -- Insert data to customer
 INSERT INTO Customers (customerId, customerName, customerPhone, customerAddress) VALUES (1, "Lê Huy Giang", "0981111111", "Thanh Hoa");
 INSERT INTO Customers (customerName, customerPhone, customerAddress) VALUES ("Lê Huy Hoàng", "098222222", "Thanh Hoá");
