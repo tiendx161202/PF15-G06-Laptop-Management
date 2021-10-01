@@ -10,7 +10,6 @@ namespace DAL
     {
         private MySqlConnection connection = DBConfiguration.GetConnection();
 
-
         public bool ChangeQuanity(Invoice invoice)
         {
             bool result = true;
@@ -326,5 +325,6 @@ namespace DAL
             return result;
         }
 
+        
     }
 }

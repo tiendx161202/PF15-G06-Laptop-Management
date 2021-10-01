@@ -26,7 +26,7 @@ namespace ConsolePL
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.Clear();
             Console.WriteLine("======================================================");
-            Console.WriteLine("|\t INVOICE LAPTOP T&G                           |");
+            Console.WriteLine("|\t INVOICE LAPTOP T&G                          |");
             Console.WriteLine("======================================================");
             Console.WriteLine("Invoice No:            {0}", invoice.InvoiceNo);
             Console.WriteLine("Invoice Creation Date: {0}", invoice.InvoiceDate);
@@ -37,7 +37,8 @@ namespace ConsolePL
             Console.WriteLine("Customer Address:      {0}", invoice.InvoiceCustomer.CustomerAddress);
             Console.WriteLine("======================================================");
 
-            decimal? total = 0;
+
+            decimal total = 0;
             var table = new ConsoleTable("NO", "LAPTOP", "QUANITY", "PRICE");
             IFormatProvider info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
 
@@ -49,11 +50,14 @@ namespace ConsolePL
             }
             table.Write(ConsoleTables.Format.Alternative);
             Console.WriteLine(string.Format(info, "Total invoice: {0:c}", total));
+            string totalmoney = SupProgram.IntroMoney(total);
+            Console.WriteLine("Into Money: " + totalmoney);
             Console.ReadKey();
         }
 
         private static void ConfirmPay()
         {
+
             int iNo = 0;
             Invoice invoice = new Invoice();
             do
@@ -79,6 +83,7 @@ namespace ConsolePL
             }
             DisplayInvoice(invoice);
 
+
             while (true)
             {
                 Console.Write("Are you sure to confirm this invoice? (Y/N): ");
@@ -98,6 +103,7 @@ namespace ConsolePL
                 break;
             }
             Console.WriteLine("HHHHHHHHHHHHHHHHH");
+
 
             Console.ReadKey();
 
@@ -957,6 +963,8 @@ namespace ConsolePL
                     userName = Console.ReadLine();
                     sbl.ValidateUserName(userName, out ErrorMessage);
 
+
+
                     if (ErrorMessage != null)
                     {
                         Console.WriteLine(ErrorMessage);
@@ -1011,6 +1019,89 @@ namespace ConsolePL
                 return pass;
             }
 
+            internal static string IntroMoney(decimal inputNumber, bool suffix = true)
+            {
+                string[] unitNumbers = new string[] { "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE" };
+                string[] placeValues = new string[] { "", "THOUSAND", "MILLON" };
+
+                // -12345678.3445435 => "-12345678"
+                string sNumber = inputNumber.ToString("#");
+                double number = Convert.ToDouble(sNumber);
+                if (number < 0)
+                {
+                    number = -number;
+                    sNumber = number.ToString();
+                }
+
+
+                int ones, tens, hundreds;
+
+                int positionDigit = sNumber.Length;   // last -> first
+
+                string result = " ";
+
+
+                if (positionDigit == 0)
+                    result = unitNumbers[0] + result;
+                else
+                {
+                    // 0:       ###
+                    // 1: nghìn ###,###
+                    // 2: triệu ###,###,###
+                    // 3: tỷ    ###,###,###,###
+                    int placeValue = 0;
+
+                    while (positionDigit > 0)
+                    {
+                        // Check last 3 digits remain ### (hundreds tens ones)
+                        tens = hundreds = -1;
+                        ones = Convert.ToInt32(sNumber.Substring(positionDigit - 1, 1));
+                        positionDigit--;
+                        if (positionDigit > 0)
+                        {
+                            tens = Convert.ToInt32(sNumber.Substring(positionDigit - 1, 1));
+                            positionDigit--;
+                            if (positionDigit > 0)
+                            {
+                                hundreds = Convert.ToInt32(sNumber.Substring(positionDigit - 1, 1));
+                                positionDigit--;
+                            }
+                        }
+
+                        if ((ones > 0) || (tens > 0) || (hundreds > 0) || (placeValue == 3))
+                            result = placeValues[placeValue] + result;
+
+                        placeValue++;
+                        if (placeValue > 3) placeValue = 1;
+
+                        if ((ones == 1) && (tens > 1))
+                            result = "ONE " + result;
+                        else
+                        {
+                            if ((ones == 5) && (tens > 0))
+                                result = "FIVE " + result;
+                            else if (ones > 0)
+                                result = unitNumbers[ones] + " " + result;
+                        }
+                        if (tens < 0)
+                            break;
+                        else
+                        {
+                            if (tens == 1) result = "TEN " + result;
+                            if (tens > 1) result = unitNumbers[tens] + "TY " + result;
+                        }
+                        if (hundreds < 0) break;
+                        else
+                        {
+                            if ((hundreds > 0) || (tens > 0) || (ones > 0))
+                                result = unitNumbers[hundreds] + " HUNDRED " + result;
+                        }
+                        result = " " + result;
+                    }
+                }
+                result = result.Trim();
+                return result;
+            }
         }
     }
 }
